@@ -4,7 +4,7 @@
   "description": "apex trading co",
   "main": "./out/main/index.js",
   "author": "Groot Technologies",
-  "homepage": "https://github.com/sabbir-org/bms-desktop",
+  "homepage": "https://github.com/sabbir-org/apex-trading",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

@@ -104,7 +104,7 @@ async function createFile(fileContent, accessToken, fileName) {
 
   return {
     success: true,
-    message: "File uploaded successfully",
+    message: "Backup completed"
   };
 }
 
@@ -135,6 +135,6 @@ async function updateFile(fileId, fileContent, accessToken) {
 
   return {
     success: true,
-    message: "Synced sucessfully",
+    message: "Synced sucessfully"
   };
 }

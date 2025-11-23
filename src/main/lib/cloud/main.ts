@@ -1,3 +1,4 @@
+import { app } from "electron";
 import fs from "fs";
 import { google } from "googleapis";
 import { join } from "path";
@@ -11,9 +12,13 @@ const SCOPES = [
 // const TOKEN_PATH = join(app.getPath("userData"), "tokens.json");
 const TOKEN_PATH = join(getRootDir(), "tokens.json");
 
+const devRootDir = app.getAppPath();
+const configPath = join(devRootDir, "config.json");
+const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
 export const oauth2Client: any = new google.auth.OAuth2(
-  "",
-  "",
+  config.GOOGLE_CLIENT_ID,
+  config.GOOGLE_CLIENT_SECRET,
   REDIRECT_URI
 );
 
