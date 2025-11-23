@@ -1,0 +1,59 @@
+.show_toast {
+  animation: appear 0.2s ease-out forwards;
+}
+
+.hide_toast {
+  animation: disappear 0.2s ease-out forwards;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes disappear {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.wraper_show {
+  animation: appearwraper 0.2s ease-out forwards;
+}
+
+.wraper_hide {
+  animation: disappearwraper 0.2s ease-out forwards;
+}
+
+@keyframes appearwraper {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes disappearwraper {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 0.9;
+  }
+}

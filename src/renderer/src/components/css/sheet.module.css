@@ -1,0 +1,89 @@
+.show_sheet {
+  animation: appear 0.2s ease-out forwards;
+}
+
+.hide_sheet {
+  animation: disappear 0.2s ease-out forwards;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    /* scale: 0.9; */
+  }
+  to {
+    opacity: 1;
+    /* scale: 1; */
+  }
+}
+
+@keyframes disappear {
+  from {
+    opacity: 1;
+    /* scale: 1; */
+  }
+  to {
+    opacity: 0;
+    /* scale: 0.9; */
+  }
+}
+
+.wraper_show {
+  animation: appearwraper 0.2s ease-out forwards;
+}
+
+.wraper_hide {
+  animation: disappearwraper 0.2s ease-out forwards;
+}
+
+@keyframes appearwraper {
+  from {
+    opacity: 0;
+    /* scale: 0.95; */
+    transform: translateX(50%);
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+    /* scale: 1; */
+  }
+}
+
+@keyframes disappearwraper {
+  from {
+    transform: translateX(0%);
+    opacity: 1;
+    /* scale: 1; */
+  }
+  to {
+    opacity: 0;
+    transform: translateX(50%);
+    /* scale: 0.95; */
+  }
+}
+
+.main_squeeze {
+  animation: squeezemain 0.2s ease-out forwards;
+}
+
+.main_normal {
+  animation: normalmain 0.2s ease-out forwards;
+}
+
+@keyframes squeezemain {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 0.95;
+  }
+}
+
+@keyframes normalmain {
+  from {
+    scale: 0.95;
+  }
+  to {
+    scale: 1;
+  }
+}

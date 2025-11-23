@@ -1,0 +1,16 @@
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.spin {
+  transform-origin: center;
+  animation: spin 1s linear infinite ;
+}
+
+@keyframes spin {
+  100% {
+    rotate: 360deg;
+  }
+}

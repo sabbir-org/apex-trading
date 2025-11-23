@@ -1,0 +1,58 @@
+.show_modal {
+  animation: appear 0.2s ease-out forwards;
+}
+
+.hide_modal {
+  animation: disappear 0.2s ease-out forwards;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes disappear {
+  from {
+    opacity: 1;
+   
+  }
+  to {
+    opacity: 0;
+
+  }
+}
+
+.wraper_show {
+  animation: appearwraper 0.2s ease-out forwards;
+}
+
+.wraper_hide {
+  animation: disappearwraper 0.2s ease-out forwards;
+}
+
+@keyframes appearwraper {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes disappearwraper {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
