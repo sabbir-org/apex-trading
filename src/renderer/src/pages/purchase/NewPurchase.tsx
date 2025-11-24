@@ -128,7 +128,7 @@ const NewPurchase = () => {
             <div
               className={`flex h-8 items-center rounded border px-2 hover:bg-zinc-100`}
               onClick={() =>
-                openModal(action.sale.searchuser, {
+                openModal(action.common.searchuser, {
                   storedUsers: suppliers,
                   userType: "supplier",
                   setUser: setValue

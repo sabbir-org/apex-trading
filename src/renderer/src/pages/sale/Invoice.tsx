@@ -1,58 +1,13 @@
-import { action } from "@/lib/constants"
-import { bdt } from "@/lib/utils"
-import { useModalStore } from "@/store"
-import html2canvas from "html2canvas"
-import jsPDF from "jspdf"
-import { Printer } from "lucide-react"
-import { useRef, useState } from "react"
-import icon from "../../assets/icon.png"
+import { bdt } from "@/lib/utils";
+import icon from "../../assets/icon.png";
 
-const Invoice = ({ saleData }) => {
+const Invoice = ({ saleData, pdfRef }) => {
   const { products, customer, serial, poNum, chalanNum, billingDate, paid, paymentOption } =
-    saleData
-  const [billCreated, setBillCreated] = useState(false)
+    saleData;
 
-  const billAmount = products?.reduce((acc, curr) => acc + curr.rate * curr.quantity, 0) || 0
-  const prevDue = customer?.totalPurchase - customer?.totalPaid || 0
+  const billAmount = products?.reduce((acc, curr) => acc + curr.rate * curr.quantity, 0) || 0;
+  const prevDue = customer?.totalPurchase - customer?.totalPaid || 0;
 
-  const pdfRef = useRef<HTMLDivElement | null>(null)
-
-  const printInvoice = async () => {
-    const element = pdfRef.current
-    if (!element) return
-    const canvas = await html2canvas(element, {
-      scale: 3, // Higher quality
-      useCORS: true,
-      logging: false
-    })
-
-    const imgData = canvas.toDataURL("image/png")
-
-    // const link = document.createElement("a")
-    // link.download = `image.png`
-    // link.href = imgData
-    // link.click()
-
-    const pdf = new jsPDF("p", "mm", "a4")
-    const imgWidth = 210 // A4 width in mm
-    const pageHeight = 295 // A4 height in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-    let heightLeft = imgHeight
-    let position = 0
-
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
-    heightLeft -= pageHeight
-
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight
-      pdf.addPage()
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
-    }
-
-    pdf.save(`Invoice-${serial ? serial + "-" + customer?.name : "random"}.pdf`)
-  }
   return (
     <div>
       <div className={`p-12`} ref={pdfRef}>
@@ -99,7 +54,7 @@ const Invoice = ({ saleData }) => {
             </div>
           </div>
         </div>
-        <div className={`mt-4 h-[450px] border-t border-dotted border-[#364153] pt-4`}>
+        <div className={`mt-4 h-[450px] border-t border-dashed border-[#7c7c7c] pt-4`}>
           <table className={`w-full border`}>
             <thead>
               <tr className={`border-b border-black`}>
@@ -175,18 +130,18 @@ const Invoice = ({ saleData }) => {
         </div>
       </div>
 
-      <button
+      {/* <button
         className={`absolute right-14 bottom-6 h-8 cursor-pointer rounded border border-blue-400 px-4 text-blue-600`}
         onClick={() => {
           billCreated
             ? printInvoice()
-            : useModalStore.getState().openModal(action.sale.billwarning, { printInvoice })
+            : useModalStore.getState().openModal(action.sale.billwarning, { printInvoice });
         }}
       >
         <Printer className={`h-4 w-4`}></Printer>
-      </button>
+      </button> */}
     </div>
-  )
-}
+  );
+};
 
-export default Invoice
+export default Invoice;

@@ -1,15 +1,17 @@
-import Options from "@/components/options"
-import { Subtitle, Title } from "@/components/typography"
-import { DatePicker } from "@/components/ui/datePicker"
-import { action, paymentOptions } from "@/lib/constants"
-import { useCustomerStore, useModalStore, useProductStore, useSaleStore } from "@/store"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { TSale } from "@shared/models"
-import clsx from "clsx"
-import { useForm } from "react-hook-form"
-import { v4 } from "uuid"
-import { z } from "zod"
-import Invoice from "./Invoice"
+import Options from "@/components/options";
+import { Subtitle, Title } from "@/components/typography";
+import { DatePicker } from "@/components/ui/datePicker";
+import { action, paymentOptions } from "@/lib/constants";
+import { htmlToPdf } from "@/lib/htmlToPDF";
+import { useCustomerStore, useModalStore, useProductStore, useSaleStore } from "@/store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { TSale } from "@shared/models";
+import clsx from "clsx";
+import { useRef } from "react";
+import { useForm } from "react-hook-form";
+import { v4 } from "uuid";
+import { z } from "zod";
+import Invoice from "./Invoice";
 
 const schema = z.object({
   serial: z.string(),
@@ -23,9 +25,9 @@ const schema = z.object({
   paid: z.number(),
   profit: z.number(),
   billAmount: z.number()
-})
+});
 
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema>;
 
 const NewSale = () => {
   const {
@@ -45,14 +47,15 @@ const NewSale = () => {
       paymentOption: [],
       profit: 0
     }
-  })
+  });
 
-  const { openModal } = useModalStore()
-  const { customers } = useCustomerStore()
-  const { products } = useProductStore()
-  const { updateSale } = useSaleStore()
+  const { openModal } = useModalStore();
+  const { customers } = useCustomerStore();
+  const { products } = useProductStore();
+  const { updateSale } = useSaleStore();
+  const pdfRef = useRef<HTMLDivElement | null>(null);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     const postData: TSale = {
       id: v4(),
       billNum: data.serial ? data.serial + data.customer?.name : "retail",
@@ -67,11 +70,28 @@ const NewSale = () => {
       poNum: data.poNum,
       desc: data.desc,
       profit: data.profit
-    }
+    };
 
-    updateSale(postData)
-  }
-  const formData = watch()
+    // const res = await updateSale(postData);
+    if (true) {
+      openModal(action.common.minimemo, {
+        saleData: postData,
+        keepFocus: true,
+        actionFunction: printPdfHandler
+      });
+    }
+  };
+
+  const formData = watch();
+
+  const printPdfHandler = () => {
+    const { customer, serial } = formData;
+    const name = customer
+      ? `${serial}-${customer.name.toLowerCase()}-${customer.identifier.toLowerCase()}}`
+      : "retail";
+    reset();
+    htmlToPdf(name, pdfRef);
+  };
 
   return (
     <div className={`flex gap-x-2`}>
@@ -129,7 +149,7 @@ const NewSale = () => {
             <div
               className={`flex h-8 items-center rounded border px-2 hover:bg-zinc-100`}
               onClick={() =>
-                openModal(action.sale.searchuser, {
+                openModal(action.common.searchuser, {
                   storedUsers: customers,
                   userType: "customer",
                   setUser: setValue
@@ -176,8 +196,8 @@ const NewSale = () => {
               placeholder="paid amount"
               value={formData.paid === 0 ? "" : formData.paid}
               onChange={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value)
-                setValue("paid", value)
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                setValue("paid", value);
               }}
             />
           </div>
@@ -191,10 +211,10 @@ const NewSale = () => {
         </form>
       </div>
       <div className={`w-[60%]`}>
-        <Invoice saleData={formData}></Invoice>
+        <Invoice saleData={formData} pdfRef={pdfRef}></Invoice>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NewSale
+export default NewSale;

@@ -18,8 +18,8 @@ declare global {
       restock: (data: {
         id: string;
         quantity: number;
-        cost: number;
-      }) => Promise<{ success: boolean }>;
+        rate: number;
+      }) => Promise<{ success: boolean, message: string }>;
       trashProducts: (ids: string[]) => Promise<{ success: boolean }>;
 
       getCustomers: () => Promise<TCustomer[]>;

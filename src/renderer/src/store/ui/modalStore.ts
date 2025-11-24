@@ -1,26 +1,26 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
 type State = {
-  openModalId: string | null
-  modalProps: Record<string, any> | null
-  isClosing: boolean
-  openModal: (id: string, args?: any) => void
-  closeModal: () => void
-}
+  openModalId: string | null;
+  argProps: Record<string, any> | null;
+  isClosing: boolean;
+  openModal: (id: string, args?: any) => void;
+  closeModal: () => void;
+};
 
 export const useModalStore = create<State>((set) => ({
   openModalId: null,
   isClosing: false,
-  modalProps: null,
-  openModal: (id, props) => {
-    set({ openModalId: id, modalProps: props })
+  argProps: null,
+  openModal: (id, args) => {
+    set({ openModalId: id, argProps: args });
   },
 
   closeModal: () => {
-    set({ isClosing: true })
+    set({ isClosing: true });
     setTimeout(() => {
-      set({ openModalId: null })
-      set({ isClosing: false })
-    }, 200)
+      set({ openModalId: null });
+      set({ isClosing: false });
+    }, 200);
   }
-}))
+}));

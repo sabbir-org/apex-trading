@@ -1,42 +1,45 @@
 type Action = {
   product: {
-    create: string
-    update: string
-    delete: string
-    stock: string
-    sell: string
-    edit: string
-  }
+    create: string;
+    update: string;
+    delete: string;
+    stock: string;
+    sell: string;
+    edit: string;
+  };
   customer: {
-    create: string
-    update: string
-    delete: string
-    edit: string
-    details: string
-  }
+    create: string;
+    update: string;
+    delete: string;
+    edit: string;
+    details: string;
+  };
   supplier: {
-    create: string
-    update: string
-    delete: string
-    edit: string
-    details: string
-  }
+    create: string;
+    update: string;
+    delete: string;
+    edit: string;
+    details: string;
+  };
   sale: {
-    create: string
-    update: string
-    delete: string
-    edit: string
-    searchuser: string
-    cart: string
-    billwarning: string
-  }
+    create: string;
+    update: string;
+    delete: string;
+    edit: string;
+    cart: string;
+    billwarning: string;
+  };
   purchase: {
-    create: string
-    delete: string
-    update: string
-    cart: string
-  }
-}
+    create: string;
+    delete: string;
+    update: string;
+    cart: string;
+  };
+  common: {
+    searchuser: string;
+    minimemo: string;
+  };
+};
 
 export const action: Action = {
   product: {
@@ -66,7 +69,6 @@ export const action: Action = {
     update: "update-sale",
     delete: "trash-sale",
     edit: "edit-sale",
-    searchuser: "search-user",
     cart: "search-product",
     billwarning: "bill-warning"
   },
@@ -75,7 +77,11 @@ export const action: Action = {
     delete: "trash-purchase",
     update: "update-purchase",
     cart: "purchase-cart"
+  },
+  common: {
+    searchuser: "search-user",
+    minimemo: "mini-memo"
   }
-}
+};
 
-export const paymentOptions = ["cash", "cheque", "card", "online"]
+export const paymentOptions = ["cash", "cheque", "card", "online"];

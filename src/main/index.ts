@@ -34,7 +34,7 @@ function createWindow(): void {
       ? join(__dirname, "../../resources/icon.png")
       : join(__dirname, "../build/icon.ico"),
 
-    width: is.dev ? 1900 : 1500,
+    width: is.dev ? 1600 : 1500,
     minWidth: 1200,
     maxWidth: 1600,
     height: 900,

@@ -1,9 +1,9 @@
 import { useModalStore } from "@/store"
 import { Trash2 } from "lucide-react"
 
-const DeleteSale = ({ props }) => {
+const DeleteSale = ({ args }) => {
   const handleAction = () => {
-    props.handlerFun(props.dataToDel)
+    args.handlerFun(args.dataToDel)
     useModalStore.getState().closeModal()
   }
   return (

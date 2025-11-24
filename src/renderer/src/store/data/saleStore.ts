@@ -1,19 +1,19 @@
-import { useExtraStore, useToastStore } from "@/store"
-import { TProduct, TSale, TSaleProduct } from "@shared/models"
-import { create } from "zustand"
+import { useExtraStore, useToastStore } from "@/store";
+import { TProduct, TSale, TSaleProduct } from "@shared/models";
+import { create } from "zustand";
 
 interface State {
-  sales: TSale[]
-  loading: boolean
-  error: string | null
-  cart: TSaleProduct[]
-  getLastId: () => string
-  fetchSales: () => Promise<void>
-  updateSale: (sale: TSale) => Promise<void>
-  undoSale: (sale: TSale) => Promise<void>
-  updateCart: (item: TProduct) => void
-  updateCartValue: (item: TProduct, key: string, value: number) => void
-  clearCart: () => void
+  sales: TSale[];
+  loading: boolean;
+  error: string | null;
+  cart: TSaleProduct[];
+  getLastId: () => string;
+  fetchSales: () => Promise<void>;
+  updateSale: (sale: TSale) => Promise<{ success: boolean }>;
+  undoSale: (sale: TSale) => Promise<void>;
+  updateCart: (item: TProduct) => void;
+  updateCartValue: (item: TProduct, key: string, value: number) => void;
+  clearCart: () => void;
 }
 
 export const useSaleStore = create<State>((set, get) => ({
@@ -23,31 +23,31 @@ export const useSaleStore = create<State>((set, get) => ({
   cart: [],
 
   fetchSales: async () => {
-    set({ loading: true, error: null })
+    set({ loading: true, error: null });
     try {
-      const sales = await window.context.getSales()
-      set({ sales, loading: false })
+      const sales = await window.context.getSales();
+      set({ sales, loading: false });
     } catch (err: any) {
-      set({ error: err.message || "Failed to load sales", loading: false })
+      set({ error: err.message || "Failed to load sales", loading: false });
     }
   },
 
   getLastId: () => {
     try {
-      const lastId = get().sales[get().sales.length - 1].id
-      return lastId
+      const lastId = get().sales[get().sales.length - 1].id;
+      return lastId;
     } catch (err: any) {
-      return "P000"
+      return "P000";
     }
   },
 
   updateCart: (item) => {
-    const found = get().cart.find((prod) => prod.productId === item.id)
+    const found = get().cart.find((prod) => prod.productId === item.id);
 
     if (found) {
       set({
         cart: get().cart.filter((prod) => prod.productId !== item.id)
-      })
+      });
     } else {
       set({
         cart: [
@@ -63,7 +63,7 @@ export const useSaleStore = create<State>((set, get) => ({
             rate: 0
           }
         ]
-      })
+      });
     }
   },
 
@@ -71,45 +71,48 @@ export const useSaleStore = create<State>((set, get) => ({
     set({
       cart: get().cart.map((prod) => {
         if (prod.productId === item.id) {
-          return { ...prod, [key]: value }
+          return { ...prod, [key]: value };
         }
-        return prod
+        return prod;
       })
-    })
+    });
   },
 
   clearCart: () => set({ cart: [] }),
 
   updateSale: async (sale) => {
-    set({ loading: true, error: null })
+    set({ loading: true, error: null });
     try {
-      const res = await window.context.updateSale(sale)
+      const res = await window.context.updateSale(sale);
       if (res.success) {
-        await useExtraStore.getState().fetchAll()
-        useToastStore.getState().toast("newsale", "sale added", "success")
+        await useExtraStore.getState().fetchAll();
+        get().clearCart();
+        useToastStore.getState().toast("newsale", "sale added", "success");
+        return { success: true };
       } else {
-        set({ error: "Failed to add sale" })
+        set({ error: "Failed to add sale" });
       }
     } catch (err: any) {
-      set({ error: err.message || "Failed to add sale" })
+      set({ error: err.message || "Failed to add sale" });
     } finally {
-      set({ loading: false })
+      set({ loading: false });
     }
+    return { success: false };
   },
 
   undoSale: async (sale) => {
     try {
-      const res = await window.context.undoSale(sale)
+      const res = await window.context.undoSale(sale);
       if (res.success) {
-        await useExtraStore.getState().fetchAll()
-        useToastStore.getState().toast("undosale", "sale removed", "success")
+        await useExtraStore.getState().fetchAll();
+        useToastStore.getState().toast("undosale", "sale removed", "success");
       } else {
-        set({ error: "Failed to remove sale" })
+        set({ error: "Failed to remove sale" });
       }
     } catch (err: any) {
-      set({ error: err.message || "Failed to remove sale" })
+      set({ error: err.message || "Failed to remove sale" });
     } finally {
-      set({ loading: false })
+      set({ loading: false });
     }
   }
-}))
+}));

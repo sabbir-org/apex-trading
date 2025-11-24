@@ -5,8 +5,8 @@ import clsx from "clsx"
 import { Check, Search } from "lucide-react"
 import { useState } from "react"
 
-const Cart = ({ props }) => {
-  const { storedItems, setValue } = props
+const Cart = ({ args }) => {
+  const { storedItems, setValue } = args
   const [filteredItems, setFilteredItems] = useState<TProduct[]>(storedItems)
   const { cart, updateCart, updateCartValue, clearCart } = useSaleStore()
 
@@ -68,9 +68,9 @@ const Cart = ({ props }) => {
 
                   {item.name}
                 </p>
-                <p>{item.size}</p>
-                <p>{item.unit}</p>
                 <p>{item.brand}</p>
+                <p>{item.unit}</p>
+                <p>{item.size}</p>
                 {cart.find((prod) => prod.productId === item.id) ? (
                   <>
                     <input

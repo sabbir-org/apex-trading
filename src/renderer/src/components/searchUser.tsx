@@ -1,30 +1,30 @@
-import { action } from "@/lib/constants"
-import { wordFilter } from "@/lib/utils"
-import { useModalStore, useSheetStore } from "@/store"
-import { TCustomer, TSupplier } from "@shared/models"
-import { Search } from "lucide-react"
-import { useState } from "react"
+import { action } from "@/lib/constants";
+import { wordFilter } from "@/lib/utils";
+import { useModalStore, useSheetStore } from "@/store";
+import { TCustomer, TSupplier } from "@shared/models";
+import { Search } from "lucide-react";
+import { useState } from "react";
 
-const SearchUser = ({ props }) => {
-  const { storedUsers, setUser, userType } = props
-  const [filteredItems, setFilteredItems] = useState<(TCustomer | TSupplier)[]>(storedUsers)
+const SearchUser = ({ args }) => {
+  const { storedUsers, setUser, userType } = args;
+  const [filteredItems, setFilteredItems] = useState<(TCustomer | TSupplier)[]>(storedUsers);
 
   const handleSearchLogic = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    const filtered = storedUsers.filter((item) => wordFilter(item.name, value))
-    setFilteredItems(filtered)
-  }
+    const value = e.target.value;
+    const filtered = storedUsers.filter((item) => wordFilter(item.name, value));
+    setFilteredItems(filtered);
+  };
 
   const handleSelectUser = (item: TCustomer | TSupplier) => {
-    setUser(userType, item)
-    useModalStore.getState().closeModal()
-  }
+    setUser(userType, item);
+    useModalStore.getState().closeModal();
+  };
 
   const handleAddNewUser = () => {
-    useModalStore.getState().closeModal()
-    if (userType === "customer") useSheetStore.getState().openSheet(action.customer.create)
-    else useSheetStore.getState().openSheet(action.supplier.create)
-  }
+    useModalStore.getState().closeModal();
+    if (userType === "customer") useSheetStore.getState().openSheet(action.customer.create);
+    else useSheetStore.getState().openSheet(action.supplier.create);
+  };
 
   return (
     <div className={`h-[350px] w-[450px]`}>
@@ -59,12 +59,12 @@ const SearchUser = ({ props }) => {
               >
                 {item.name} - {item.identifier} - {item.address}
               </div>
-            )
+            );
           })}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SearchUser
+export default SearchUser;

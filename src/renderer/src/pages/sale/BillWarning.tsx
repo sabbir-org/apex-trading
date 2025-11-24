@@ -1,10 +1,10 @@
 import { useModalStore } from "@/store"
 import { TriangleAlert } from "lucide-react"
 
-const BillWarning = ({ props }) => {
+const BillWarning = ({ args }) => {
   const handleAction = () => {
     useModalStore.getState().closeModal()
-    props.printInvoice()
+    args.printInvoice()
   }
   return (
     <div className={`flex w-[450px] flex-col items-center pt-8 pb-4`}>

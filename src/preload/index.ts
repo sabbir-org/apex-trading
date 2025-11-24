@@ -1,8 +1,8 @@
-import { TCustomer, TExpense, TProduct, TPurchase, TSale, TSupplier } from "@shared/models"
-import { contextBridge, ipcRenderer } from "electron"
+import { TCustomer, TExpense, TProduct, TPurchase, TSale, TSupplier } from "@shared/models";
+import { contextBridge, ipcRenderer } from "electron";
 
 if (!process.contextIsolated) {
-  throw new Error("contextIsolation must be enabled in the BrowserWindow")
+  throw new Error("contextIsolation must be enabled in the BrowserWindow");
 }
 
 try {
@@ -46,7 +46,7 @@ try {
     getLedger: () => ipcRenderer.invoke("getLedger"),
     updateLedger: (invoice: any) => ipcRenderer.invoke("updateLedger", invoice),
     trashMemo: (invoiceId: string) => ipcRenderer.invoke("trashMemo", invoiceId)
-  })
+  });
 } catch (error) {
-  console.error(error)
+  console.error(error);
 }

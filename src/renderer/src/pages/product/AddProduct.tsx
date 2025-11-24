@@ -1,19 +1,19 @@
-import { getProductId } from "@/lib/utils"
-import { useProductStore } from "@/store"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { clsx } from "clsx"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { getProductId } from "@/lib/utils";
+import { useProductStore } from "@/store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { clsx } from "clsx";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const schema = z.object({
   name: z.string().min(1),
   category: z.string().min(1),
   brand: z.string().min(1),
-  size: z.string().min(1),
+  size: z.string(),
   unit: z.string().min(1)
-})
+});
 
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema>;
 
 const AddProduct = () => {
   const {
@@ -23,8 +23,8 @@ const AddProduct = () => {
     formState: { errors }
   } = useForm<FormData>({
     resolver: zodResolver(schema)
-  })
-  const { updateProduct, getLastId } = useProductStore()
+  });
+  const { updateProduct, getLastId } = useProductStore();
 
   const onSubmit = (data: FormData) => {
     const postData = {
@@ -36,16 +36,16 @@ const AddProduct = () => {
       costLast: 0,
       stock: 0,
       cost: 0,
-      size: data.size,
+      size: data.size || "N/A",
       unit: data.unit,
       rate: 0,
       quantity: 0,
       trashed: false
-    }
-    updateProduct(postData)
+    };
+    updateProduct(postData);
     // console.log(postData)
-    reset()
-  }
+    reset();
+  };
 
   return (
     <div>
@@ -121,6 +121,6 @@ const AddProduct = () => {
         </button>
       </form>
     </div>
-  )
-}
-export default AddProduct
+  );
+};
+export default AddProduct;

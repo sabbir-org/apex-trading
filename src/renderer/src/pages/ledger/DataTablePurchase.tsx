@@ -47,7 +47,7 @@ export function DataTablePurchase<Sale extends TPurchase, TValue>({
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border mt-4">
       {menuHook.openMenuId === sale?.id && (
         <Menu hook={menuHook}>
           <button
