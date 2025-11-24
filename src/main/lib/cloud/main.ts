@@ -22,16 +22,6 @@ export const oauth2Client: any = new google.auth.OAuth2(
   REDIRECT_URI
 );
 
-export function loadTokens() {
-  try {
-    return JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
-  } catch {
-    return null;
-  }
-}
-export function saveTokens(tokens) {
-  fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
-}
 export function getAuthURL() {
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
@@ -39,4 +29,32 @@ export function getAuthURL() {
     prompt: "consent"
   });
   return url;
+}
+
+export function saveTokens(tokens) {
+  fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
+}
+
+export function loadTokens() {
+  try {
+    return JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+export async function refreshAccessToken(refreshToken: string) {
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: config.GOOGLE_CLIENT_ID,
+      client_secret: config.GOOGLE_CLIENT_SECRET,
+      refresh_token: refreshToken,
+      grant_type: "refresh_token"
+    })
+  });
+
+  if (!response.ok) throw new Error("Refresh failed");
+  return await response.json();
 }

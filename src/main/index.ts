@@ -25,19 +25,20 @@ import { getPurchases, updatePurchase } from "./lib/localdb/dbPurchase";
 import { getSales, undoSale, updateSale } from "./lib/localdb/dbSale";
 import { getSuppliers, trashSupplier, updateSupplier } from "./lib/localdb/dbSupplier";
 
+export let mainWindow: BrowserWindow;
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     title: "Apex Trading",
     icon: is.dev
       ? join(__dirname, "../../resources/icon.png")
       : join(__dirname, "../build/icon.ico"),
 
-    width: 1500,
-    height: 900,
+    width: is.dev ? 1900 : 1500,
     minWidth: 1200,
-    minHeight: 800,
     maxWidth: 1600,
+    height: 900,
+    minHeight: 800,
     maxHeight: 900,
     resizable: true,
     maximizable: false, // disables maximize button

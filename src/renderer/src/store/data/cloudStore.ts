@@ -63,6 +63,10 @@ export const useCloudStore = create<State>((set) => ({
       if (res.success) {
         set({ loading: false, loggedIn: true });
         console.log(res.data);
+      } else {
+        set({ loading: false, error: res.message });
+        console.log(res.data);
+        useToastStore.getState().toast("sync", res.message, "error");
       }
     } catch (err: any) {
       console.log(err);

@@ -1,6 +1,9 @@
+import { is } from "@electron-toolkit/utils";
 import { BrowserWindow } from "electron";
 import express from "express";
-import { getAuthURL, loadTokens, oauth2Client, saveTokens } from "./main";
+import { join } from "path";
+import { mainWindow } from "./../../index";
+import { getAuthURL, loadTokens, oauth2Client, refreshAccessToken, saveTokens } from "./main";
 
 export let authWindow: BrowserWindow | null = null;
 
@@ -31,8 +34,18 @@ export async function login() {
     authWindow = new BrowserWindow({
       width: 500,
       height: 600,
-      webPreferences: { nodeIntegration: false }
+      webPreferences: { nodeIntegration: false },
+      autoHideMenuBar: true,
+      modal: true,
+      parent: mainWindow, // Associate with main window
+      maximizable: false, // disables maximize button
+      minimizable: false, // disables minimize button
+      movable: false,
+      icon: is.dev
+        ? join(__dirname, "../../resources/icon.png")
+        : join(__dirname, "../build/icon.ico")
     });
+
     authWindow.loadURL(authURL);
     authWindow.on("closed", () => {
       authWindow = null;
@@ -42,35 +55,70 @@ export async function login() {
   });
 }
 
-export async function verify(): Promise<{ success: boolean; message: string; data?: any }> {
+async function fetchWithAuth(url: string, token: string) {
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response;
+}
+
+type TAuthResponse = {
+  success: boolean;
+  message: string;
+  data?: any;
+};
+
+export async function verify(): Promise<TAuthResponse> {
   const savedTokens = loadTokens();
   if (!savedTokens) {
     await login();
+    return { success: false, message: "Please login" };
   }
 
   try {
-    // Simple token validation by calling userinfo
-    const userResponse = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-      headers: {
-        Authorization: `Bearer ${savedTokens.access_token}`
-      }
-    });
+    /**
+     * STEP: 1
+     * Token validation with currently saved token
+     * */
 
-    if (userResponse.status === 401) {
-      throw new Error("Token expired or invalid");
+    let response = await fetchWithAuth(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      savedTokens.access_token
+    );
+
+    /**
+     * STEP: 2
+     * Handle token expiration/invalid error
+     * */
+    if (response.status === 401 && savedTokens.refresh_token) {
+      const newTokens = await refreshAccessToken(savedTokens.refresh_token);
+      const updatedTokens = {
+        ...savedTokens,
+        access_token: newTokens.access_token,
+        expires_in: newTokens.expires_in
+      };
+
+      saveTokens(updatedTokens);
+
+      // Retry with new token
+      response = await fetchWithAuth(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        newTokens.access_token
+      );
     }
 
-    if (!userResponse.ok) {
-      throw new Error(`API error: ${userResponse.status}`);
+    // Handle final response
+    if (response.status === 401) {
+      await login();
+      return { success: false, message: "Session expired" };
     }
 
-    const userInfo = await userResponse.json();
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
 
-    return {
-      success: true,
-      message: "Authentication valid",
-      data: userInfo
-    };
+    const userInfo = await response.json();
+    return { success: true, message: "Authentication valid", data: userInfo };
   } catch (error) {
     console.log("Authentication failed:", error);
     return {
