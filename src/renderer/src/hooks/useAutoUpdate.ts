@@ -9,21 +9,17 @@ interface DownloadProgress {
 }
 
 export const useAutoUpdate = () => {
-  const [hasNewUpdate, setHasNewUpdate] = useState(false);
-  const [status, setStatus] = useState<string>("Idle");
+  const [status, setStatus] = useState<string>("");
   const [progress, setProgress] = useState<DownloadProgress | null>(null);
 
-  const { notify, updateNotify } = useNotifyStore();
+  const { notify } = useNotifyStore();
 
   useEffect(() => {
     (async () => {
       const res = await window.context.hasNewUpdate();
       if (res.success) {
-        setHasNewUpdate(true);
-        notify("update", res.message, {
-          label: "update now",
-          handler: checkForUpdates
-        });
+        setStatus(res.message);
+        notify("update");
       }
     })();
 
@@ -35,18 +31,11 @@ export const useAutoUpdate = () => {
 
   const checkForUpdates = () => {
     window.context.checkForUpdates();
-    if (progress) {
-      updateNotify("Downloading update...", progress.percent.toFixed(2), () => {});
-    }
-
-    if (status.includes("Update downloaded")) {
-      updateNotify("Want to update now?", "restart", restartApp);
-    }
   };
 
   const restartApp = () => {
     window.context.restartApp();
   };
 
-  return { hasNewUpdate, status, progress, checkForUpdates, restartApp };
+  return { status, progress, checkForUpdates, restartApp };
 };

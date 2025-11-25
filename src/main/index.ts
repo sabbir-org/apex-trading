@@ -83,10 +83,9 @@ function createWindow(): void {
   // ✅ Open DevTools in development
   mainWindow.webContents.openDevTools({ mode: "right" });
 
-  mainWindow.once("ready-to-show", () => {
-    is.dev && simulateDevUpdate()
-  });
-
+  // mainWindow.once("ready-to-show", () => {
+  //   is.dev && simulateDevUpdate();
+  // });
 }
 
 // ---------------- Dev Mode Fake Update Simulator ----------------
@@ -94,15 +93,12 @@ function simulateDevUpdate() {
   if (!mainWindow) return;
 
   setTimeout(() => mainWindow.webContents.send("update-status", "Checking for update..."), 1000);
-  setTimeout(
-    () => mainWindow.webContents.send("update-status", "Update available. Downloading..."),
-    2000
-  );
+  setTimeout(() => mainWindow.webContents.send("update-status", "Downloading..."), 2000);
 
   let percent = 0;
   setTimeout(() => {
     const interval = setInterval(() => {
-      percent += 10;
+      percent += 1;
       mainWindow.webContents.send("download-progress", {
         percent,
         transferred: percent,
@@ -112,9 +108,9 @@ function simulateDevUpdate() {
 
       if (percent >= 100) {
         clearInterval(interval);
-        mainWindow.webContents.send("update-status", "Update dd. Click Restart to install.");
+        mainWindow.webContents.send("update-status", "Update now");
       }
-    }, 500);
+    }, 1);
   }, 2000);
 }
 // ---------------- AutoUpdater Events ----------------
@@ -125,7 +121,7 @@ autoUpdater.on("checking-for-update", () => {
 });
 
 autoUpdater.on("update-available", () => {
-  mainWindow.webContents.send("update-status", "Update available. Downloading...");
+  mainWindow.webContents.send("update-status", "Downloading...");
 });
 
 autoUpdater.on("update-not-available", () => {
@@ -141,7 +137,7 @@ autoUpdater.on("download-progress", (progressObj) => {
 });
 
 autoUpdater.on("update-downloaded", () => {
-  mainWindow.webContents.send("update-status", "Update downloaded. Restart to install.");
+  mainWindow.webContents.send("update-status", "Update now");
 });
 
 app.whenReady().then(() => {

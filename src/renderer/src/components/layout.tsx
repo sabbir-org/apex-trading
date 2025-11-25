@@ -30,7 +30,7 @@ import { Toast } from "./toast";
 import { Subtitle } from "./typography";
 
 const Layout = ({ children }) => {
-  const {} = useAutoUpdate();
+  const { status, progress, checkForUpdates, restartApp } = useAutoUpdate();
 
   useEffect(() => {
     useProductStore.getState().fetchProducts();
@@ -46,9 +46,21 @@ const Layout = ({ children }) => {
       <Sidebar></Sidebar>
       <Main>{children}</Main>
       <Toast />
-      <Notification />
       <Modal></Modal>
       <Sheet></Sheet>
+      {status && (
+        <Notification>
+          <div>
+            <p>{status}</p>
+            {progress && <p>{progress.percent.toFixed(2)}</p>}
+          </div>
+          {status.includes("Update now") ? (
+            <button className={`cursor-pointer`} onClick={restartApp}>restart</button>
+          ) : (
+            <button className={`cursor-pointer`} onClick={checkForUpdates}>update now</button>
+          )}
+        </Notification>
+      )}
     </div>
   );
 };
