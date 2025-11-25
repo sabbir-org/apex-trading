@@ -1,6 +1,6 @@
 {
   "name": "apex_trading",
-  "version": "2.1.2",
+  "version": "2.1.0",
   "description": "apex trading co",
   "main": "./out/main/index.js",
   "author": "Groot Technologies",
@@ -93,11 +93,14 @@
   "build": {
     "appId": "com.apextrading.app",
     "productName": "Apex Trading",
-    "artifactName": "apex_trading-${version}.${ext}",
+    "artifactName": "apex_trading_${version}.${ext}",
     "win": {
       "executableName": "Apex Trading",
       "icon": "build/icon.ico",
       "target": "nsis"
+    },
+    "nsis": {
+      "uninstallDisplayName": "Apex Trading"
     },
     "publish": [
       {
