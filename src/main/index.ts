@@ -110,7 +110,7 @@ function simulateDevUpdate() {
         clearInterval(interval);
         mainWindow.webContents.send("update-status", "Update now");
       }
-    }, 1);
+    }, 100);
   }, 2000);
 }
 // ---------------- AutoUpdater Events ----------------

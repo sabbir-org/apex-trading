@@ -11,7 +11,7 @@ export async function hasNewUpdate() {
     const data = yaml.load(asText);
     newVersion = data.version > app.getVersion();
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
   return {
     success: newVersion,

@@ -11,7 +11,6 @@ interface DownloadProgress {
 export const useAutoUpdate = () => {
   const [status, setStatus] = useState<string>("");
   const [progress, setProgress] = useState<DownloadProgress | null>(null);
-
   const { notify } = useNotifyStore();
 
   useEffect(() => {

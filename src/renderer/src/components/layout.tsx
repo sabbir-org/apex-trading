@@ -41,6 +41,17 @@ const Layout = ({ children }) => {
     useExtraStore.getState().fetchExpenses();
   }, []);
 
+  let locked = false;
+
+  const handleUpdate = () => {
+    if (locked) return;
+    locked = true;
+    setTimeout(() => {
+      locked = false;
+    }, 1000);
+    checkForUpdates();
+  };
+  
   return (
     <div className={`h-full`}>
       <Sidebar></Sidebar>
@@ -51,13 +62,32 @@ const Layout = ({ children }) => {
       {status && (
         <Notification>
           <div>
-            <p>{status}</p>
-            {progress && <p>{progress.percent.toFixed(2)}</p>}
+            {status.includes("Downloading") ? (
+              <div className={`h-1 w-[150px] overflow-hidden rounded bg-blue-100`}>
+                <div
+                  className={`h-1 w-0 rounded bg-blue-500`}
+                  style={{
+                    width: `${progress?.percent.toFixed(2)}%`
+                  }}
+                ></div>
+              </div>
+            ) : (
+              <p>{status}</p>
+            )}
           </div>
-          {status.includes("Update now") ? (
-            <button className={`cursor-pointer`} onClick={restartApp}>restart</button>
-          ) : (
-            <button className={`cursor-pointer`} onClick={checkForUpdates}>update now</button>
+
+          {status.includes("New version available") && (
+            <button className={`cursor-pointer text-blue-600`} onClick={handleUpdate}>
+              Update now
+            </button>
+          )}
+
+          {status.includes("Downloading") && <p className={`text-blue-600`}>{progress?.percent.toFixed(2)}%</p>}
+
+          {status.includes("Update now") && (
+            <button className={`cursor-pointer text-blue-600`} onClick={restartApp}>
+              restart
+            </button>
           )}
         </Notification>
       )}
