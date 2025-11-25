@@ -81,11 +81,7 @@ function createWindow(): void {
   }
 
   // ✅ Open DevTools in development
-  mainWindow.webContents.openDevTools({ mode: "right" });
-
-  // mainWindow.once("ready-to-show", () => {
-  //   is.dev && simulateDevUpdate();
-  // });
+  is.dev && mainWindow.webContents.openDevTools({ mode: "right" });
 }
 
 // ---------------- Dev Mode Fake Update Simulator ----------------
