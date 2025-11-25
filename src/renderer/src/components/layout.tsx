@@ -51,7 +51,7 @@ const Layout = ({ children }) => {
     }, 1000);
     checkForUpdates();
   };
-  
+
   return (
     <div className={`h-full`}>
       <Sidebar></Sidebar>
@@ -67,7 +67,7 @@ const Layout = ({ children }) => {
                 <div
                   className={`h-1 w-0 rounded bg-blue-500`}
                   style={{
-                    width: `${progress?.percent.toFixed(2)}%`
+                    width: `${progress?.percent.toFixed(2) || 0}%`
                   }}
                 ></div>
               </div>
@@ -82,7 +82,9 @@ const Layout = ({ children }) => {
             </button>
           )}
 
-          {status.includes("Downloading") && <p className={`text-blue-600`}>{progress?.percent.toFixed(2)}%</p>}
+          {status.includes("Downloading") && (
+            <p className={`text-blue-600`}>{progress?.percent.toFixed(2)}%</p>
+          )}
 
           {status.includes("Update now") && (
             <button className={`cursor-pointer text-blue-600`} onClick={restartApp}>
