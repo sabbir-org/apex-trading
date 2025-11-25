@@ -74,7 +74,7 @@ const NewSale = () => {
     };
 
     // const res = await updateSale(postData);
-    if (false) {
+    if (true) {
       openModal(action.common.minimemo, {
         saleData: postData,
         keepFocus: true,
