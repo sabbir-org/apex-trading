@@ -91,6 +91,14 @@
     "vite": "^6.2.6"
   },
   "build": {
+    "appId": "com.apextrading.app",
+    "productName": "Apex Trading",
+    "artifactName": "apex_trading-${version}.${ext}",
+    "win": {
+      "executableName": "Apex Trading",
+      "icon": "build/icon.ico",
+      "target": "nsis"
+    },
     "publish": [
       {
         "provider": "github",

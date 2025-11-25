@@ -74,13 +74,13 @@ const NewSale = () => {
     };
 
     // const res = await updateSale(postData);
-    // if (true) {
-    //   openModal(action.common.minimemo, {
-    //     saleData: postData,
-    //     keepFocus: true,
-    //     actionFunction: printPdfHandler
-    //   });
-    // }
+    if (true) {
+      openModal(action.common.minimemo, {
+        saleData: postData,
+        keepFocus: true,
+        actionFunction: printPdfHandler
+      });
+    }
   };
 
   const formData = watch();
