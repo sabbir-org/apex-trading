@@ -1,13 +1,13 @@
-import { create } from "zustand"
+import { create } from "zustand";
 
 type State = {
-  openToastId: string
-  isAnimating: boolean
-  toastContent: string
-  status: string
-  toast: (id: string, content: string, status: string) => void
-  closeToast: () => void
-}
+  openToastId: string;
+  isAnimating: boolean;
+  toastContent: string;
+  status: string;
+  toast: (id: string, content: string, status: string) => void;
+  closeToast: () => void;
+};
 
 export const useToastStore = create<State>((set, get) => ({
   openToastId: "",
@@ -17,23 +17,23 @@ export const useToastStore = create<State>((set, get) => ({
 
   toast: (id, content, status) => {
     const showToast = () => {
-      set({ status })
-      set({ openToastId: id })
-      set({ toastContent: content })
+      set({ status });
+      set({ openToastId: id });
+      set({ toastContent: content });
       setTimeout(() => {
-        if (get().openToastId === id) get().closeToast()
-      }, 3000)
-    }
+        if (get().openToastId === id) get().closeToast();
+      }, 3000);
+    };
 
-    if (get().openToastId === id) return
-    showToast()
+    if (get().openToastId === id) return;
+    showToast();
   },
 
   closeToast: () => {
-    set({ isAnimating: true })
+    set({ isAnimating: true });
     setTimeout(() => {
-      set({ isAnimating: false })
-      set({ openToastId: "" })
-    }, 200)
+      set({ isAnimating: false });
+      set({ openToastId: "" });
+    }, 200);
   }
-}))
+}));

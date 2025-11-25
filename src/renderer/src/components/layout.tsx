@@ -1,15 +1,15 @@
 import { CustomLink, Modal, Sheet } from "@/components";
+import { useAutoUpdate } from "@/hooks/useAutoUpdate";
 import { useMenu } from "@/hooks/useMenu";
+
 import {
   useCloudStore,
   useCustomerStore,
   useExtraStore,
-  useModalStore,
   useProductStore,
   usePurchaseStore,
   useSaleStore,
-  useSupplierStore,
-  useToastStore
+  useSupplierStore
 } from "@/store";
 import {
   Grid2x2,
@@ -25,14 +25,12 @@ import { useNavigate } from "react-router";
 import { v4 } from "uuid";
 import icon from "../assets/icon.png";
 import { Menu } from "./menu";
+import Notification from "./notification";
 import { Toast } from "./toast";
 import { Subtitle } from "./typography";
 
 const Layout = ({ children }) => {
-  const [status, setStatus] = useState("Checking for updates...");
-  const [progress, setProgress] = useState(0);
-  const [showProgress, setShowProgress] = useState(false);
-  const [showRestart, setShowRestart] = useState(false);
+  const {} = useAutoUpdate();
 
   useEffect(() => {
     useProductStore.getState().fetchProducts();
@@ -43,88 +41,17 @@ const Layout = ({ children }) => {
     useExtraStore.getState().fetchExpenses();
   }, []);
 
-  useEffect(() => {
-    // Listen for update status from main process
-    // @ts-ignore
-    if (window.electronAPI) {
-      // @ts-ignore
-      window.electronAPI.onUpdateStatus((event, message) => {
-        setStatus(message);
-
-        if (message.includes("downloaded")) {
-          setShowRestart(true);
-          setShowProgress(false);
-        } else if (message.includes("Downloading")) {
-          setShowProgress(true);
-        } else if (message.includes("not available")) {
-          setShowProgress(false);
-        }
-      });
-      // @ts-ignore
-      window.electronAPI.onDownloadProgress((event, progressObj) => {
-        const percent = Math.round(progressObj.percent);
-        setProgress(percent);
-        setStatus(`Downloading update: ${percent}%`);
-      });
-    }
-
-    // Check for updates when component mounts
-    checkForUpdates();
-
-    return () => {
-      // Cleanup listeners if needed
-      // @ts-ignore
-      if (window.electronAPI) {
-        // @ts-ignore
-        window.electronAPI.removeAllListeners("update-status");
-        // @ts-ignore
-        window.electronAPI.removeAllListeners("download-progress");
-      }
-    };
-  }, []);
-
-  const checkForUpdates = async () => {
-    // @ts-ignore
-    if (window.electronAPI) {
-      try {
-        // @ts-ignore
-        await window.electronAPI.checkForUpdates();
-      } catch (error) {
-        setStatus("Error checking for updates");
-        console.error("Update check failed:", error);
-      }
-    }
-  };
-
-  const restartApp = async () => {
-    // @ts-ignore
-    if (window.electronAPI) {
-      // @ts-ignore
-      await window.electronAPI.restartApp();
-    }
-  };
-
-  const manuallyCheckUpdates = async () => {
-    setStatus("Checking for updates...");
-    setShowProgress(false);
-    setShowRestart(false);
-    await checkForUpdates();
-  };
-
-  useToastStore.getState().toast("update", status, "info");
-
   return (
     <div className={`h-full`}>
       <Sidebar></Sidebar>
       <Main>{children}</Main>
       <Toast />
+      <Notification />
       <Modal></Modal>
       <Sheet></Sheet>
     </div>
   );
 };
-
-
 
 const Sidebar = () => {
   const { isSyncOn, loading, verifyToken, loggedIn, turnOnSync } = useCloudStore();

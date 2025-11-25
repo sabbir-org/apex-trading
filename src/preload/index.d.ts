@@ -54,8 +54,9 @@ declare global {
       updateLedger: (invoice: any) => Promise<{ success: boolean }>;
       trashMemo: (invoiceId: string) => Promise<{ success: boolean }>;
 
-      onUpdateStatus: (callback) => void;
-      onDownloadProgress: (callback) => void;
+      hasNewUpdate: () => Promise<{ success: boolean; message: string }>;
+      onUpdateStatus: (callback: (event: any, message: string) => void) => void;
+      onDownloadProgress: (callback: (event: any, progress: any) => void) => void;
       checkForUpdates: () => void;
       restartApp: () => void;
     };

@@ -26,6 +26,7 @@ import { getSales, undoSale, updateSale } from "./lib/localdb/dbSale";
 import { getSuppliers, trashSupplier, updateSupplier } from "./lib/localdb/dbSupplier";
 
 import { autoUpdater } from "electron-updater";
+import { hasNewUpdate } from "./lib/updater/handlers";
 
 export let mainWindow: BrowserWindow;
 function createWindow(): void {
@@ -80,15 +81,43 @@ function createWindow(): void {
   }
 
   // ✅ Open DevTools in development
-  if (process.env.NODE_ENV === "development") {
-    mainWindow.webContents.openDevTools({ mode: "right" });
-  }
+  mainWindow.webContents.openDevTools({ mode: "right" });
 
-  // Check for updates after window is ready
   mainWindow.once("ready-to-show", () => {
-    autoUpdater.checkForUpdatesAndNotify();
+    is.dev && simulateDevUpdate()
   });
+
 }
+
+// ---------------- Dev Mode Fake Update Simulator ----------------
+function simulateDevUpdate() {
+  if (!mainWindow) return;
+
+  setTimeout(() => mainWindow.webContents.send("update-status", "Checking for update..."), 1000);
+  setTimeout(
+    () => mainWindow.webContents.send("update-status", "Update available. Downloading..."),
+    2000
+  );
+
+  let percent = 0;
+  setTimeout(() => {
+    const interval = setInterval(() => {
+      percent += 10;
+      mainWindow.webContents.send("download-progress", {
+        percent,
+        transferred: percent,
+        total: 100,
+        bytesPerSecond: 500
+      });
+
+      if (percent >= 100) {
+        clearInterval(interval);
+        mainWindow.webContents.send("update-status", "Update dd. Click Restart to install.");
+      }
+    }, 500);
+  }, 2000);
+}
+// ---------------- AutoUpdater Events ----------------
 
 // Auto Updater Events
 autoUpdater.on("checking-for-update", () => {
@@ -113,10 +142,6 @@ autoUpdater.on("download-progress", (progressObj) => {
 
 autoUpdater.on("update-downloaded", () => {
   mainWindow.webContents.send("update-status", "Update downloaded. Restart to install.");
-  // Optionally prompt user to restart
-  setTimeout(() => {
-    autoUpdater.quitAndInstall();
-  }, 5000);
 });
 
 app.whenReady().then(() => {
@@ -126,10 +151,17 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  // IPC test
+  /** --------------------- test -----------------------------------*/
   ipcMain.on("ping", () => console.log("pong"));
 
-  /** Products */
+  /** --------------------- Electron updater -----------------------------------*/
+  ipcMain.handle("check-for-updates", () => {
+    is.dev ? simulateDevUpdate() : autoUpdater.checkForUpdates();
+  });
+  ipcMain.handle("hasNewUpdate", async () => await hasNewUpdate());
+  ipcMain.handle("restart-app", () => autoUpdater.quitAndInstall());
+
+  /** --------------------- Products -----------------------------------*/
   ipcMain.handle("getProducts", async () => await getProducts());
   ipcMain.handle("updateProduct", async (_, product) => await updateProduct(product));
   ipcMain.handle("reduceQuantity", async (_, data) => await reduceQuantity(data));
@@ -140,7 +172,7 @@ app.whenReady().then(() => {
   ipcMain.handle("restock", async (_, data) => await restock(data));
   ipcMain.handle("trashProducts", async (_, ids: string[]) => await trashProducts(ids));
 
-  /** Customers */
+  /** --------------------- Customers ------------------------------------ */
   ipcMain.handle("getCustomers", async () => await getCustomers());
   ipcMain.handle("updateCustomer", async (_, customer) => await updateCustomer(customer));
   ipcMain.handle(
@@ -149,26 +181,26 @@ app.whenReady().then(() => {
   );
   ipcMain.handle("trashCustomer", async (_, ids: string[]) => await trashCustomer(ids));
 
-  /** Suppliers */
+  /** --------------------- Suppliers ------------------------------------ */
   ipcMain.handle("getSuppliers", async () => await getSuppliers());
   ipcMain.handle("updateSupplier", async (_, supplier) => await updateSupplier(supplier));
   ipcMain.handle("trashSupplier", async (_, ids: string[]) => await trashSupplier(ids));
 
-  /** Sales */
+  /** --------------------- Sales ------------------------------------ */
   ipcMain.handle("getSales", async () => await getSales());
   ipcMain.handle("updateSale", async (_, sale) => await updateSale(sale));
   ipcMain.handle("undoSale", async (_, sale) => await undoSale(sale));
 
-  /** Purchases */
+  /** --------------------- Purchases ------------------------------------ */
   ipcMain.handle("getPurchases", async () => await getPurchases());
   ipcMain.handle("updatePurchase", async (_, purchase) => await updatePurchase(purchase));
 
-  /** Extra */
+  /** --------------------- Extra ------------------------------------ */
   ipcMain.handle("getExpenses", async () => await getExpenses());
   ipcMain.handle("updateDashboard", async (_, key, value) => await updateDashboard(key, value));
   ipcMain.handle("updateExpense", async (_, expense) => await updateExpense(expense));
 
-  /** Cloud */
+  /** --------------------- Cloud ------------------------------------- */
   ipcMain.handle("uploadToDrive", async () => await uploadToDrive());
   ipcMain.handle("login", async () => await login());
   ipcMain.handle("verify", async () => await verify());
