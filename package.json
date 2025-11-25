@@ -1,6 +1,6 @@
 {
   "name": "apex-trading",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "apex trading co",
   "main": "./out/main/index.js",
   "author": "Groot Technologies",
@@ -17,6 +17,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
+    "publish": "electron-builder --win --publish always",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "rebuild": "electron-rebuild -f -w better-sqlite3"
@@ -39,6 +40,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
+    "electron-updater": "^6.6.2",
     "express": "^5.1.0",
     "fs-extra": "^11.3.0",
     "google-auth-library": "^10.5.0",
@@ -86,6 +88,15 @@
     "tw-animate-css": "^1.3.5",
     "typescript": "^5.8.3",
     "vite": "^6.2.6"
+  },
+  "build": {
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "sabbir-org",
+        "repo": "apex-trading"
+      }
+    ]
   },
   "pnpm": {
     "onlyBuiltDependencies": [

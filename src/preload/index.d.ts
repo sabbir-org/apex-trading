@@ -19,7 +19,7 @@ declare global {
         id: string;
         quantity: number;
         rate: number;
-      }) => Promise<{ success: boolean, message: string }>;
+      }) => Promise<{ success: boolean; message: string }>;
       trashProducts: (ids: string[]) => Promise<{ success: boolean }>;
 
       getCustomers: () => Promise<TCustomer[]>;
@@ -53,6 +53,11 @@ declare global {
       getLedger: () => Promise<any[]>;
       updateLedger: (invoice: any) => Promise<{ success: boolean }>;
       trashMemo: (invoiceId: string) => Promise<{ success: boolean }>;
+
+      onUpdateStatus: (callback) => void;
+      onDownloadProgress: (callback) => void;
+      checkForUpdates: () => void;
+      restartApp: () => void;
     };
   }
 }

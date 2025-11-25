@@ -25,6 +25,8 @@ import { getPurchases, updatePurchase } from "./lib/localdb/dbPurchase";
 import { getSales, undoSale, updateSale } from "./lib/localdb/dbSale";
 import { getSuppliers, trashSupplier, updateSupplier } from "./lib/localdb/dbSupplier";
 
+import { autoUpdater } from "electron-updater";
+
 export let mainWindow: BrowserWindow;
 function createWindow(): void {
   // Create the browser window.
@@ -81,7 +83,41 @@ function createWindow(): void {
   if (process.env.NODE_ENV === "development") {
     mainWindow.webContents.openDevTools({ mode: "right" });
   }
+
+  // Check for updates after window is ready
+  mainWindow.once("ready-to-show", () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
 }
+
+// Auto Updater Events
+autoUpdater.on("checking-for-update", () => {
+  mainWindow.webContents.send("update-status", "Checking for update...");
+});
+
+autoUpdater.on("update-available", () => {
+  mainWindow.webContents.send("update-status", "Update available. Downloading...");
+});
+
+autoUpdater.on("update-not-available", () => {
+  mainWindow.webContents.send("update-status", "Update not available.");
+});
+
+autoUpdater.on("error", (err) => {
+  mainWindow.webContents.send("update-status", `Error in auto-updater: ${err}`);
+});
+
+autoUpdater.on("download-progress", (progressObj) => {
+  mainWindow.webContents.send("download-progress", progressObj);
+});
+
+autoUpdater.on("update-downloaded", () => {
+  mainWindow.webContents.send("update-status", "Update downloaded. Restart to install.");
+  // Optionally prompt user to restart
+  setTimeout(() => {
+    autoUpdater.quitAndInstall();
+  }, 5000);
+});
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId("com.electron");

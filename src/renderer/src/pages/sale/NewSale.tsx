@@ -2,7 +2,7 @@ import Options from "@/components/options";
 import { Subtitle, Title } from "@/components/typography";
 import { DatePicker } from "@/components/ui/datePicker";
 import { action, paymentOptions } from "@/lib/constants";
-import { htmlToPdf } from "@/lib/htmlToPDF";
+
 import { useCustomerStore, useModalStore, useProductStore, useSaleStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TSale } from "@shared/models";
@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
 import Invoice from "./Invoice";
+import { htmlToPdf } from "@/lib/htmlToPdf";
 
 const schema = z.object({
   serial: z.string(),

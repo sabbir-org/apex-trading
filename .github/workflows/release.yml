@@ -1,0 +1,47 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build the app
+        run: pnpm run build
+
+      - name: Build releases
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            pnpm run build:win
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            pnpm run build:mac
+          else
+            pnpm run build:linux
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
