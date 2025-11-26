@@ -1,5 +1,5 @@
 import { TSale } from "@shared/models";
-import { getDataBase } from "./main";
+import { getDataBase, update } from "./main";
 
 export async function getSales(): Promise<TSale[]> {
   const db = await getDataBase();
@@ -7,9 +7,8 @@ export async function getSales(): Promise<TSale[]> {
 }
 
 export async function updateSale(sale: TSale) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       const idx = data.sales.findIndex((s) => s.id === sale.id);
       if (idx >= 0) data.sales[idx] = sale;
       else {
@@ -50,9 +49,8 @@ export async function updateSale(sale: TSale) {
 }
 
 export async function undoSale(sale: TSale) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       const customer = data.customers.find((dataCustomer) => dataCustomer.id === sale.customerId);
       if (customer) {
         customer.totalPurchase -= sale.billAmount;

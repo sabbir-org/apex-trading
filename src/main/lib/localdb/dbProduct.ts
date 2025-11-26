@@ -1,5 +1,5 @@
 import { TProduct, TSaleProduct } from "@shared/models";
-import { getDataBase } from "./main";
+import { getDataBase, update } from "./main";
 
 export async function getProducts(): Promise<TProduct[]> {
   const db = await getDataBase();
@@ -7,9 +7,8 @@ export async function getProducts(): Promise<TProduct[]> {
 }
 
 export async function updateProduct(product: TProduct) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       const idx = data.products.findIndex((p) => p.id === product.id);
       if (idx >= 0) data.products[idx] = product;
       else data.products.push(product);
@@ -20,10 +19,10 @@ export async function updateProduct(product: TProduct) {
   }
 }
 
+// issue in this function why customer instead of product
 export async function updateProductField(id: string, key: string, value: string) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       const customer = data.customers.find((c) => c.id === id);
       if (customer) customer[key] = value;
     });
@@ -34,10 +33,8 @@ export async function updateProductField(id: string, key: string, value: string)
 }
 
 export async function restock(data) {
-  const db = await getDataBase();
-
   try {
-    await db.update((table) => {
+    await update((table) => {
       const product = table.products.find((p) => p.id === data.id);
 
       if (product) {
@@ -63,15 +60,14 @@ export async function restock(data) {
     });
     return { success: true, message: "Product restocked" };
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return { success: false, message: "Failed to restock" };
   }
 }
 
 export async function reduceQuantity(data: TSaleProduct) {
-  const db = await getDataBase();
   try {
-    await db.update((item) => {
+    await update((item) => {
       const product = item.products.find((p) => p.id === data.productId);
       if (product) product.quantity -= data.quantity;
     });
@@ -82,9 +78,8 @@ export async function reduceQuantity(data: TSaleProduct) {
 }
 
 export async function trashProducts(ids: string[]) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       data.products = data.products.map((p) => {
         if (ids.includes(p.id)) p.trashed = true;
         return p;

@@ -26,8 +26,8 @@ import { getSales, undoSale, updateSale } from "./lib/localdb/dbSale";
 import { getSuppliers, trashSupplier, updateSupplier } from "./lib/localdb/dbSupplier";
 
 import { autoUpdater } from "electron-updater";
-import { hasNewUpdate } from "./lib/updater/handlers";
 import { reloadDatabase } from "./lib/localdb/main";
+import { hasNewUpdate } from "./lib/updater/handlers";
 
 export let mainWindow: BrowserWindow;
 function createWindow(): void {

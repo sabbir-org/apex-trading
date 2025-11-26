@@ -1,5 +1,25 @@
 https://github.com/iffy/electron-updater-example?tab=readme-ov-file
 
+Exactly — that’s exactly what’s happening.
+
+When you use db.update() (or any LowDB CRUD), you are modifying the in-memory object (\_db.data) directly in RAM.
+
+Your UI reads from this live in-memory object, so updates appear immediately.
+
+The JSON file on disk is just persistence — the disk write happens asynchronously via db.write().
+
+If you edit db.json manually:
+
+LowDB has already loaded \_db.data into memory.
+
+It does not automatically watch the file, so your manual changes are ignored.
+
+Reloading the app only works if your getDataBase() actually reads the disk before caching, but if you’re caching \_db globally, it may still serve the old in-memory object.
+
+✅ Key point: LowDB’s “live updates” come from manipulating the cached RAM object, not from the file on disk.
+
+If you want, I can explain how to make LowDB pick up manual edits from disk, though it’s usually not needed in normal apps.
+
 ```ts
 // main/index.ts
 export let mainWindow: BrowserWindow;

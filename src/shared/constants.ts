@@ -1,2 +1,2 @@
-export const appDirectory = 'ApexTrading'
+export const appDirectory = 'ApexTradingAppDir'
 export const fileEncoding = 'utf-8'

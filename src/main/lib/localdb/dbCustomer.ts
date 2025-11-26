@@ -1,5 +1,5 @@
 import { TCustomer } from "@shared/models";
-import { getDataBase } from "./main";
+import { getDataBase, update } from "./main";
 
 export async function getCustomers(): Promise<TCustomer[]> {
   const db = await getDataBase();
@@ -7,10 +7,9 @@ export async function getCustomers(): Promise<TCustomer[]> {
 }
 
 export async function updateCustomer(customer: TCustomer) {
-  const db = await getDataBase();
   let message = "customer added";
   try {
-    await db.update((data) => {
+    await update((data) => {
       const idx = data.customers.findIndex((c) => c.id === customer.id);
       if (idx >= 0) {
         data.customers[idx] = customer;
@@ -24,9 +23,8 @@ export async function updateCustomer(customer: TCustomer) {
 }
 
 export async function updateCustomerField(id: string, key: string, value: string) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       const customer = data.customers.find((c) => c.id === id);
       if (customer) customer[key] = value;
     });
@@ -37,9 +35,8 @@ export async function updateCustomerField(id: string, key: string, value: string
 }
 
 export async function trashCustomer(ids: string[]) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       data.customers = data.customers.map((c) => {
         if (ids.includes(c.id)) c.trashed = true;
         return c;

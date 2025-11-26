@@ -105,3 +105,7 @@ export type TStats = {
   totalPayment: number;
   totalExpense: number;
 };
+
+export type TMeta = {
+  lastUpdated: number;
+}

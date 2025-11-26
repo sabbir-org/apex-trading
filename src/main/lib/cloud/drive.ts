@@ -1,7 +1,7 @@
 import fs from "fs";
 import { join } from "path";
-import { reloadDatabase } from "../localdb/main";
-import { getRootDir } from "../root";
+import { getDataBase, reloadDatabase } from "../localdb/main";
+import { getAppDir } from "../root";
 import { verify } from "./auth";
 import { loadTokens } from "./main";
 
@@ -19,7 +19,7 @@ export async function uploadToDrive() {
   }
 
   const fileName = `appdb.json`;
-  const filePath = join(getRootDir(), fileName);
+  const filePath = join(getAppDir(), fileName);
   const savedTokens = loadTokens();
 
   try {
@@ -165,7 +165,7 @@ export async function readFromDrive(fileName = "appdb.json") {
     }
 
     // Step 2: Download file content
-    const fileContent = await downloadFile(existingFile.id, savedTokens.access_token);
+    const fileContent = await downloadAndSync(existingFile.id, savedTokens.access_token);
 
     // 🔥 IMPORTANT: reload in-memory DB
     await reloadDatabase();
@@ -183,7 +183,7 @@ export async function readFromDrive(fileName = "appdb.json") {
   }
 }
 
-async function downloadFile(fileId, accessToken) {
+async function downloadAndSync(fileId, accessToken) {
   const response = await fetch(`${GOOGLE_API_BASE}/drive/v3/files/${fileId}?alt=media`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -209,17 +209,22 @@ async function downloadFile(fileId, accessToken) {
 
   // ⚡ Path where DB should be saved
 
-  const filePath = join(getRootDir(), "appdb.json");
+  const filePath = join(getAppDir(), "appdb.json");
 
   // Ensure directory exists
-  if (!fs.existsSync(getRootDir())) {
-    fs.mkdirSync(getRootDir(), { recursive: true });
+  if (!fs.existsSync(getAppDir())) {
+    fs.mkdirSync(getAppDir(), { recursive: true });
   }
 
-  // Write file
-  fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+  const _db = await getDataBase();
+  const localMetaVersion = _db.data.meta.lastUpdated;
+  const cloudMetaVersion = jsonData.meta.lastUpdated;
 
-  console.log("DB downloaded and saved to:", filePath);
+  if (!localMetaVersion || cloudMetaVersion > localMetaVersion) {
+    // Write file
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log("DB downloaded and saved to:", filePath);
+  }
 
   return jsonData;
 }

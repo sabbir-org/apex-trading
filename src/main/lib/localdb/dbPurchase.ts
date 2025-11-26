@@ -1,5 +1,5 @@
 import { TPurchase } from "@shared/models";
-import { getDataBase } from "./main";
+import { getDataBase, update } from "./main";
 
 export async function getPurchases(): Promise<TPurchase[]> {
   const db = await getDataBase();
@@ -7,9 +7,8 @@ export async function getPurchases(): Promise<TPurchase[]> {
 }
 
 export async function updatePurchase(purchase: TPurchase) {
-  const db = await getDataBase();
   try {
-    await db.update((table) => {
+    await update((table) => {
       const idx = table.purchases.findIndex((s) => s.id === purchase.id);
       if (idx >= 0) table.purchases[idx] = purchase;
       else {

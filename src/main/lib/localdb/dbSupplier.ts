@@ -1,5 +1,5 @@
 import { TSupplier } from "@shared/models";
-import { getDataBase } from "./main";
+import { getDataBase, update } from "./main";
 
 export async function getSuppliers(): Promise<TSupplier[]> {
   const db = await getDataBase();
@@ -7,10 +7,9 @@ export async function getSuppliers(): Promise<TSupplier[]> {
 }
 
 export async function updateSupplier(supplier: TSupplier) {
-  const db = await getDataBase();
   let message = "supplier added";
   try {
-    await db.update((data) => {
+    await update((data) => {
       const idx = data.suppliers.findIndex((c) => c.id === supplier.id);
       if (idx >= 0) {
         data.suppliers[idx] = supplier;
@@ -24,9 +23,8 @@ export async function updateSupplier(supplier: TSupplier) {
 }
 
 export async function trashSupplier(ids: string[]) {
-  const db = await getDataBase();
   try {
-    await db.update((data) => {
+    await update((data) => {
       data.suppliers = data.suppliers.map((c) => {
         if (ids.includes(c.id)) c.trashed = true;
         return c;

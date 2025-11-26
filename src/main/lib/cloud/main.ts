@@ -2,7 +2,7 @@ import { app } from "electron";
 import fs from "fs";
 import { google } from "googleapis";
 import { join } from "path";
-import { getRootDir } from "../root";
+import { getAppDir } from "../root";
 const REDIRECT_URI = "http://localhost:3000/oauth2callback";
 const SCOPES = [
   "https://www.googleapis.com/auth/userinfo.profile",
@@ -10,7 +10,7 @@ const SCOPES = [
 ];
 
 // const TOKEN_PATH = join(app.getPath("userData"), "tokens.json");
-const TOKEN_PATH = join(getRootDir(), "tokens.json");
+const TOKEN_PATH = join(getAppDir(), "tokens.json");
 
 const devRootDir = app.getAppPath();
 const configPath = join(devRootDir, "config.json");
