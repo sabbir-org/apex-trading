@@ -1,30 +1,38 @@
-import Options from "@/components/options"
-import { Subtitle, Title } from "@/components/typography"
-import { DatePicker } from "@/components/ui/datePicker"
-import { action, paymentOptions } from "@/lib/constants"
-import { useModalStore, useProductStore, usePurchaseStore, useSupplierStore } from "@/store"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { TPurchase } from "@shared/models"
-import clsx from "clsx"
-import { useForm } from "react-hook-form"
-import { v4 } from "uuid"
-import { z } from "zod"
-import Memo from "./Memo"
+import Options from "@/components/options";
+import { Subtitle, Title } from "@/components/typography";
+import { DatePicker } from "@/components/ui/datePicker";
+import { action, paymentOptions } from "@/lib/constants";
+import { htmlToPdf } from "@/lib/htmlToPdf";
+import {
+  useModalStore,
+  useProductStore,
+  usePurchaseStore,
+  useSupplierStore,
+  useToastStore
+} from "@/store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { TPurchase } from "@shared/models";
+import clsx from "clsx";
+import { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { v4 } from "uuid";
+import { z } from "zod";
+import Memo from "./Memo";
 
 const schema = z.object({
   serial: z.string(),
   poNum: z.string(),
   chalanNum: z.string(),
-  products: z.array(z.any()),
+  products: z.array(z.any()).nonempty("Products cannot be empty"),
   supplier: z.any(),
   desc: z.string(),
   billingDate: z.string(),
   paymentOption: z.array(z.any()),
   paid: z.number(),
   billAmount: z.number()
-})
+});
 
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema>;
 
 const NewPurchase = () => {
   const {
@@ -41,16 +49,24 @@ const NewPurchase = () => {
       billAmount: 0,
       desc: "default supply",
       paid: 0,
+      products: [],
       paymentOption: []
     }
-  })
+  });
 
-  const { openModal } = useModalStore()
-  const { suppliers } = useSupplierStore()
-  const { products } = useProductStore()
-  const { updatePurchase } = usePurchaseStore()
+  const { openModal } = useModalStore();
+  const { suppliers } = useSupplierStore();
+  const { products } = useProductStore();
+  const { updatePurchase } = usePurchaseStore();
+  const pdfRef = useRef<HTMLDivElement | null>(null);
 
-  const onSubmit = (data: FormData) => {
+  useEffect(() => {
+    if (errors.products?.message) {
+      useToastStore.getState().toast("error", errors.products.message, "info");
+    }
+  }, [errors]);
+
+  const onSubmit = async (data: FormData) => {
     const postData: TPurchase = {
       id: v4(),
       address: data.supplier?.address || "N/A",
@@ -64,13 +80,30 @@ const NewPurchase = () => {
       paymentOption: data.paymentOption,
       supplierId: data.supplier?.id || "N/A",
       products: data.products
+    };
+
+    const res = await updatePurchase(postData);
+    if (res.success) {
+      openModal(action.common.shortmemo, {
+        purchaseData: postData,
+        keepFocus: true,
+        actionFunction: printPdfHandler
+      });
     }
 
-    updatePurchase(postData)
-  }
+    updatePurchase(postData);
+  };
 
-  const formData = watch()
-  console.log(errors)
+  const formData = watch();
+
+  const printPdfHandler = () => {
+    const { supplier, serial } = formData;
+    const name = supplier
+      ? `${serial}-${supplier.name.toLowerCase()}-${supplier.identifier.toLowerCase()}`
+      : "retail";
+    reset();
+    htmlToPdf(name, pdfRef);
+  };
 
   return (
     <div className={`flex gap-x-2`}>
@@ -175,8 +208,8 @@ const NewPurchase = () => {
               placeholder="paid amount"
               value={formData.paid === 0 ? "" : formData.paid}
               onChange={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value)
-                setValue("paid", value)
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                setValue("paid", value);
               }}
             />
           </div>
@@ -190,10 +223,10 @@ const NewPurchase = () => {
         </form>
       </div>
       <div className={`w-[60%]`}>
-        <Memo saleData={formData}></Memo>
+        <Memo purchaseData={formData} pdfRef={pdfRef}></Memo>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NewPurchase
+export default NewPurchase;

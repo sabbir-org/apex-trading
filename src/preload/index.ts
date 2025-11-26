@@ -47,6 +47,7 @@ try {
     updateLedger: (invoice: any) => ipcRenderer.invoke("updateLedger", invoice),
     trashMemo: (invoiceId: string) => ipcRenderer.invoke("trashMemo", invoiceId),
 
+    reloadDatabase: () => ipcRenderer.invoke("reloadDatabase"),
     hasNewUpdate: () => ipcRenderer.invoke("hasNewUpdate"),
     onUpdateStatus: (callback) => ipcRenderer.on("update-status", callback),
     onDownloadProgress: (callback) => ipcRenderer.on("download-progress", callback),

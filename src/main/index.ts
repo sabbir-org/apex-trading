@@ -11,7 +11,7 @@ import {
 } from "./lib/localdb/dbCustomer";
 
 import { authWindow, login, verify } from "./lib/cloud/auth";
-import { uploadToDrive } from "./lib/cloud/drive";
+import { readFromDrive, uploadToDrive } from "./lib/cloud/drive";
 import { getExpenses, updateDashboard, updateExpense } from "./lib/localdb/dbExtra";
 import {
   getProducts,
@@ -27,6 +27,7 @@ import { getSuppliers, trashSupplier, updateSupplier } from "./lib/localdb/dbSup
 
 import { autoUpdater } from "electron-updater";
 import { hasNewUpdate } from "./lib/updater/handlers";
+import { reloadDatabase } from "./lib/localdb/main";
 
 export let mainWindow: BrowserWindow;
 function createWindow(): void {
@@ -80,7 +81,10 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
 
-  // ✅ Open DevTools in development
+  mainWindow.once("ready-to-show", () => {
+    readFromDrive();
+  });
+
   is.dev && mainWindow.webContents.openDevTools({ mode: "right" });
 }
 
@@ -106,7 +110,7 @@ function simulateDevUpdate() {
         clearInterval(interval);
         mainWindow.webContents.send("update-status", "Update now");
       }
-    }, 100);
+    }, 10);
   }, 2000);
 }
 // ---------------- AutoUpdater Events ----------------
@@ -196,6 +200,7 @@ app.whenReady().then(() => {
   ipcMain.handle("uploadToDrive", async () => await uploadToDrive());
   ipcMain.handle("login", async () => await login());
   ipcMain.handle("verify", async () => await verify());
+  ipcMain.handle("reloadDatabase", async () => await reloadDatabase());
 
   createWindow();
   // verify().catch(console.error)

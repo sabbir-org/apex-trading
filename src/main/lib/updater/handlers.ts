@@ -9,7 +9,7 @@ export async function hasNewUpdate() {
     const response = await fetch(url);
     const asText = await response.text();
     const data = yaml.load(asText);
-    newVersion = data.version > app.getVersion();
+    newVersion = data.version !== app.getVersion();
   } catch (err) {
     console.log(err);
   }

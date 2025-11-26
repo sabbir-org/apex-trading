@@ -1,10 +1,12 @@
 import { action } from "@/lib/constants";
+import CustomerDetails from "@/pages/customer/CustomerDetails";
 import DeleteSale from "@/pages/ledger/DeleteSale";
 import Restock from "@/pages/product/Restock";
 import Cart from "@/pages/purchase/Cart";
+import ShortMemo from "@/pages/purchase/ShortMemo";
 import BillWarning from "@/pages/sale/BillWarning";
 import SaleCart from "@/pages/sale/Cart";
-import MiniMemo from "@/pages/sale/MiniMemo";
+import ShortInvoice from "@/pages/sale/ShortInvoice";
 import { useModalStore } from "@/store";
 import { useEffect, useRef, useState } from "react";
 import { Confirm } from ".";
@@ -33,13 +35,15 @@ function Modal() {
             <Confirm data={argProps?.data} onConfirm={argProps?.actionFunction}></Confirm>
           ),
           [action.product.stock]: <Restock args={argProps}></Restock>,
-          [action.common.searchuser]: <SearchUser args={argProps}></SearchUser>,
-          [action.sale.cart]: <SaleCart args={argProps}></SaleCart>,
+          [action.customer.details]: <CustomerDetails args={argProps}></CustomerDetails>,
           [action.sale.billwarning]: <BillWarning args={argProps}></BillWarning>,
+          [action.sale.cart]: <SaleCart args={argProps}></SaleCart>,
           [action.sale.delete]: <DeleteSale args={argProps}></DeleteSale>,
-          [action.common.minimemo]: <MiniMemo args={argProps}></MiniMemo>,
+          [action.purchase.delete]: <p>coming soon...</p>,
           [action.purchase.cart]: <Cart args={argProps}></Cart>,
-          [action.purchase.delete]: <p>coming soon...</p>
+          [action.common.searchuser]: <SearchUser args={argProps}></SearchUser>,
+          [action.common.shortinv]: <ShortInvoice args={argProps}></ShortInvoice>,
+          [action.common.shortmemo]: <ShortMemo args={argProps}></ShortMemo>
         }[openModalId]
       }
     </Template>

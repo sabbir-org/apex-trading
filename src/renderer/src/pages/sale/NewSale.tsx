@@ -3,28 +3,33 @@ import { Subtitle, Title } from "@/components/typography";
 import { DatePicker } from "@/components/ui/datePicker";
 import { action, paymentOptions } from "@/lib/constants";
 
-import { useCustomerStore, useModalStore, useProductStore, useSaleStore } from "@/store";
+import { htmlToPdf } from "@/lib/htmlToPdf";
+import {
+  useCustomerStore,
+  useModalStore,
+  useProductStore,
+  useSaleStore,
+  useToastStore
+} from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TSale } from "@shared/models";
 import clsx from "clsx";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
 import Invoice from "./Invoice";
-import { htmlToPdf } from "@/lib/htmlToPdf";
 
 const schema = z.object({
   serial: z.string(),
   poNum: z.string(),
   chalanNum: z.string(),
-  products: z.array(z.any()),
+  products: z.array(z.any()).nonempty("Products cannot be empty"),
   customer: z.any(),
   desc: z.string(),
   billingDate: z.string(),
   paymentOption: z.array(z.any()),
   paid: z.number(),
-  profit: z.number(),
   billAmount: z.number()
 });
 
@@ -45,8 +50,8 @@ const NewSale = () => {
       billAmount: 0,
       desc: "default bill",
       paid: 0,
-      paymentOption: [],
-      profit: 0
+      products: [],
+      paymentOption: []
     }
   });
 
@@ -55,27 +60,42 @@ const NewSale = () => {
   const { products } = useProductStore();
   const { updateSale } = useSaleStore();
   const pdfRef = useRef<HTMLDivElement | null>(null);
+  const formData = watch();
+  const billAmount =
+    formData.products?.reduce((acc, curr) => acc + curr.rate * curr.quantity, 0) || 0;
+
+  useEffect(() => {
+    setValue("paid", billAmount);
+  }, [formData.products]);
+
+  console.log(errors);
+  useEffect(() => {
+    if (errors.products?.message) {
+      useToastStore.getState().toast("error", errors.products.message, "info");
+    }
+  }, [errors]);
 
   const onSubmit = async (data: FormData) => {
     const postData: TSale = {
       id: v4(),
-      billNum: data.serial ? data.serial + data.customer?.name : "retail",
       address: data.customer?.address || "N/A",
+      billNum: data.serial ? data.serial + data.customer?.name : "retail",
       billingDate: data.billingDate,
+      billAmount,
       customerId: data.customer?.id || "N/A",
       products: data.products,
-      billAmount: data.products.reduce((acc, curr) => acc + curr.rate * curr.quantity, 0),
       paid: data.paid,
       paymentOption: data.paymentOption,
       chalanNum: data.chalanNum,
       poNum: data.poNum,
-      desc: data.desc,
-      profit: data.profit
+      desc: data.desc
     };
 
-    // const res = await updateSale(postData);
-    if (true) {
-      openModal(action.common.minimemo, {
+    console.log(postData);
+
+    const res = await updateSale(postData);
+    if (res.success) {
+      openModal(action.common.shortinv, {
         saleData: postData,
         keepFocus: true,
         actionFunction: printPdfHandler
@@ -83,12 +103,10 @@ const NewSale = () => {
     }
   };
 
-  const formData = watch();
-
   const printPdfHandler = () => {
     const { customer, serial } = formData;
     const name = customer
-      ? `${serial}-${customer.name.toLowerCase()}-${customer.identifier.toLowerCase()}}`
+      ? `${serial}-${customer.name.toLowerCase()}-${customer.identifier.toLowerCase()}`
       : "retail";
     reset();
     htmlToPdf(name, pdfRef);
@@ -194,7 +212,8 @@ const NewSale = () => {
                 "focus:border-blue-300 focus:bg-blue-50/30": !errors.paid
               })}
               type="text"
-              placeholder="paid amount"
+              placeholder={formData.paid.toString()}
+              disabled={!formData.customer}
               value={formData.paid === 0 ? "" : formData.paid}
               onChange={(e) => {
                 const value = e.target.value === "" ? 0 : Number(e.target.value);

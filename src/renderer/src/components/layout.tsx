@@ -2,15 +2,7 @@ import { CustomLink, Modal, Sheet } from "@/components";
 import { useAutoUpdate } from "@/hooks/useAutoUpdate";
 import { useMenu } from "@/hooks/useMenu";
 
-import {
-  useCloudStore,
-  useCustomerStore,
-  useExtraStore,
-  useProductStore,
-  usePurchaseStore,
-  useSaleStore,
-  useSupplierStore
-} from "@/store";
+import { useCloudStore, useExtraStore } from "@/store";
 import {
   Grid2x2,
   Package,
@@ -33,12 +25,11 @@ const Layout = ({ children }) => {
   const { status, progress, checkForUpdates, restartApp } = useAutoUpdate();
 
   useEffect(() => {
-    useProductStore.getState().fetchProducts();
-    useCustomerStore.getState().fetchCustomers();
-    useSupplierStore.getState().fetchSuppliers();
-    useSaleStore.getState().fetchSales();
-    usePurchaseStore.getState().fetchPurchases();
-    useExtraStore.getState().fetchExpenses();
+    (async () => {
+      await window.context.reloadDatabase();
+    })();
+
+    useExtraStore.getState().fetchAll();
   }, []);
 
   let locked = false;
@@ -82,8 +73,12 @@ const Layout = ({ children }) => {
             </button>
           )}
 
+          {status.includes("Checking for update") && (
+            <RefreshCw className={`mr-2 h-4 w-4 animate-spin text-blue-600`}></RefreshCw>
+          )}
+
           {status.includes("Downloading") && (
-            <p className={`text-blue-600`}>{progress?.percent.toFixed(2)}%</p>
+            <p className={`text-blue-600`}>{progress?.percent.toFixed(1)}%</p>
           )}
 
           {status.includes("Update now") && (
@@ -145,14 +140,14 @@ const Sidebar = () => {
             <ShieldUser size={16} />
           </CustomLink>
 
-          <CustomLink to={"/ledger"}>
+          <CustomLink to={"/transaction"}>
             <ScrollText size={16} />
           </CustomLink>
         </div>
 
         <div className={`mt-4 flex w-full flex-col gap-y-2`}>
           <button
-            className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-blue-400 px-2 text-lg text-blue-600 outline-[6px] outline-blue-100`}
+            className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-blue-300 px-2 text-lg text-blue-600 outline-[4px] outline-blue-100`}
             onClick={handleMenuClick}
           >
             +

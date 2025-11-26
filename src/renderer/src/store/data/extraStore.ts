@@ -44,9 +44,9 @@ export const useExtraStore = create<State>((set, get) => ({
 
   fetchAll: async () => {
     await get().fetchExpenses()
+    await useProductStore.getState().fetchProducts()
     await useCustomerStore.getState().fetchCustomers()
     await useSupplierStore.getState().fetchSuppliers()
-    await useProductStore.getState().fetchProducts()
     await useSaleStore.getState().fetchSales()
     await usePurchaseStore.getState().fetchPurchases()
   }

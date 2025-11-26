@@ -49,3 +49,8 @@ export async function getDataBase() {
   }
   return _db;
 }
+
+export async function reloadDatabase() {
+  _db = null; // Clear cached DB instance
+  await getDataBase(); // Reloads fresh from disk
+}

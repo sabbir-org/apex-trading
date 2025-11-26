@@ -2,38 +2,27 @@ import { bdt } from "@/lib/utils";
 import { useModalStore } from "@/store";
 import { TSale } from "@shared/models";
 import { Check, X } from "lucide-react";
-import icon from "../../assets/icon.png";
 
-const MiniMemo = ({ args }) => {
-  const { saleData, printInvoice, actionFunction } = args;
-  const {
-    id,
-    customerId,
-    products,
-    address,
-    billingDate,
-    poNum,
-    chalanNum,
-    billAmount,
-    paid
-  }: TSale = saleData;
+const ShortInvoice = ({ args }) => {
+  const { saleData, actionFunction } = args;
+  const { id, billingDate, billAmount, paid }: TSale = saleData;
 
   return (
     <div className={``}>
       <button
-        className={`absolute top-4 right-4 cursor-pointer`}
+        className={`absolute w-6 h-6 flex items-center justify-center top-4 right-4 cursor-pointer rounded-full bg-blue-50`}
         onClick={useModalStore.getState().closeModal}
       >
-        <X className={`text-blue-900/50`}></X>
+        <X className={`text-blue-600 w-4 h-4`}></X>
       </button>
       <div className={`p-6`}>
         <div
-          className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-100`}
+          className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-50`}
         >
           <Check className={`text-2xl text-blue-600`}></Check>
         </div>
         <h2 className={`mt-4 text-center text-lg font-medium text-blue-900`}>Bill Created</h2>
-        <img src={icon} className={`absolute top-7 left-7 h-6 w-6`} alt="logo" />
+
         <h2 className={`mt-4 text-lg font-medium text-gray-800`}>Apex Trading Co.</h2>
         <p className={``}>72 B.C.C Road, Wari, Dhaka</p>
         <p className={`mt-2 mb-4 text-gray-500`}>
@@ -43,15 +32,15 @@ const MiniMemo = ({ args }) => {
         <div className={`space-y-3 border-t border-dashed border-gray-400 pt-4`}>
           <div>
             <h2 className={`text-gray-500`}>Bill Amount</h2>
-            <p >{bdt(billAmount)}</p>
+            <p>{bdt(billAmount)}</p>
           </div>
           <div>
             <h2 className={`text-gray-500`}>Paid</h2>
-            <p >{bdt(paid)}</p>
+            <p>{bdt(paid)}</p>
           </div>
           <div>
             <h2 className={`text-gray-500`}>Billing Date</h2>
-            <p >{billingDate}</p>
+            <p>{billingDate}</p>
           </div>
         </div>
 
@@ -66,4 +55,4 @@ const MiniMemo = ({ args }) => {
   );
 };
 
-export default MiniMemo;
+export default ShortInvoice;

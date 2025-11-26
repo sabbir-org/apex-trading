@@ -1,6 +1,6 @@
 {
   "name": "apex_trading",
-  "version": "2.1.1",
+  "version": "2.1.0",
   "description": "apex trading co",
   "main": "./out/main/index.js",
   "author": "Groot Technologies",
@@ -100,7 +100,8 @@
       "target": "nsis"
     },
     "nsis": {
-      "uninstallDisplayName": "Apex Trading"
+      "uninstallDisplayName": "Apex Trading",
+      "deleteAppDataOnUninstall": true
     },
     "publish": [
       {

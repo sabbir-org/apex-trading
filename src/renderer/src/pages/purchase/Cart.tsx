@@ -1,25 +1,25 @@
-import { wordFilter } from "@/lib/utils"
-import { useModalStore, usePurchaseStore } from "@/store"
-import { TProduct } from "@shared/models"
-import clsx from "clsx"
-import { Check, Search } from "lucide-react"
-import { useState } from "react"
+import { wordFilter } from "@/lib/utils";
+import { useModalStore, usePurchaseStore } from "@/store";
+import { TProduct } from "@shared/models";
+import clsx from "clsx";
+import { Check, Search } from "lucide-react";
+import { useState } from "react";
 
 const Cart = ({ args }) => {
-  const { storedItems, setProducts } = args
-  const [filteredItems, setFilteredItems] = useState<TProduct[]>(storedItems)
-  const { cart, updateCart, updateCartValue, clearCart } = usePurchaseStore()
+  const { storedItems, setProducts } = args;
+  const [filteredItems, setFilteredItems] = useState<TProduct[]>(storedItems);
+  const { cart, updateCart, updateCartValue, clearCart } = usePurchaseStore();
 
   const handleSearchLogic = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    const filtered = storedItems.filter((item) => wordFilter(item.name, value))
-    setFilteredItems(filtered)
-  }
+    const value = e.target.value;
+    const filtered = storedItems.filter((item) => wordFilter(item.name, value));
+    setFilteredItems(filtered);
+  };
 
   const handleConfirm = () => {
-    setProducts("products", cart)
-    useModalStore.getState().closeModal()
-  }
+    setProducts("products", cart);
+    useModalStore.getState().closeModal();
+  };
 
   return (
     <div className={`min-h-[600px] w-[800px]`}>
@@ -79,7 +79,7 @@ const Cart = ({ args }) => {
                       )}
                       onClick={(e) => e.stopPropagation()}
                       type="text"
-                      placeholder={"0"}
+                      placeholder={item.quantity.toLocaleString()}
                       onChange={(e) => updateCartValue(item, "quantity", Number(e.target.value))}
                     />
                     <input
@@ -87,26 +87,26 @@ const Cart = ({ args }) => {
                         `h-8 border-b border-gray-300 outline-none focus:border-blue-300 focus:bg-blue-50/30`
                       )}
                       type="text"
-                      placeholder={"0"}
+                      placeholder={item.rate.toLocaleString()}
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => updateCartValue(item, "rate", Number(e.target.value))}
                     />
                   </>
                 ) : (
                   <>
-                    <p>0</p>
-                    <p>0</p>
+                    <p>{item.quantity}</p>
+                    <p>{item.rate}</p>
                   </>
                 )}
 
                 <p>
                   {(() => {
-                    const product = cart.find((prod) => prod.productId === item.id)
-                    return product ? product.quantity * product.rate : 0
+                    const product = cart.find((prod) => prod.productId === item.id);
+                    return product ? product.quantity * product.rate : 0;
                   })()}
                 </p>
               </div>
-            )
+            );
           })}
         </div>
       </div>
@@ -123,7 +123,7 @@ const Cart = ({ args }) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;

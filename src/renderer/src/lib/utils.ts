@@ -84,8 +84,10 @@ export function avgPrice(c1, c2, q1, q2) {
 }
 
 export function bdt(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  const format =  new Intl.NumberFormat("en-US", {
     style: "decimal",
     minimumFractionDigits: 0
   }).format(value)
+
+  return `${format} ৳`
 }

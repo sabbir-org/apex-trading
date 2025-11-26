@@ -1,28 +1,28 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
-import { useToastStore } from "@/store"
-import { CheckCircle, CircleX } from "lucide-react"
-import style from "./css/toast.module.css"
+import { useToastStore } from "@/store";
+import { CheckCircle, CircleX, Info } from "lucide-react";
+import style from "./css/toast.module.css";
 
-type Props = {}
+type Props = {};
 
 export const Toast = ({}: Props) => {
-  const modalRef = useRef<HTMLDivElement | null>(null)
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const { openToastId, isAnimating, toastContent, status } = useToastStore()
+  const { openToastId, isAnimating, toastContent, status } = useToastStore();
 
-  const [width, setWidth] = useState(0)
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    setWidth(modalRef.current?.offsetWidth || 0)
+    setWidth(modalRef.current?.offsetWidth || 0);
     const interval = setInterval(() => {
-      setWidth((prev) => Number((prev - 0.35).toFixed(1)))
-    }, 1)
+      setWidth((prev) => Number((prev - 0.35).toFixed(1)));
+    }, 1);
 
-    return () => clearInterval(interval)
-  }, [openToastId])
+    return () => clearInterval(interval);
+  }, [openToastId]);
 
-  if (!openToastId && !isAnimating) return null
+  if (!openToastId && !isAnimating) return null;
 
   return (
     <div
@@ -34,6 +34,8 @@ export const Toast = ({}: Props) => {
         <CircleX size={18} className={`text-red-600`} />
       ) : status === "success" ? (
         <CheckCircle size={18} className={`text-blue-600`} />
+      ) : status === "info" ? (
+        <Info size={18} className={`text-blue-600`}></Info>
       ) : null}
       <span className={`text-gray-600`}>{toastContent}</span>
       <div
@@ -41,5 +43,5 @@ export const Toast = ({}: Props) => {
         style={{ width: width <= 0 ? 0 : width }}
       ></div>
     </div>
-  )
-}
+  );
+};

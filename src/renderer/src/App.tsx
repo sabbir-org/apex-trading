@@ -10,7 +10,7 @@ function App() {
         <Route path="/product" element={<Product></Product>}></Route>
         <Route path="/customer" element={<Customer></Customer>}></Route>
         <Route path="/supplier" element={<Supplier></Supplier>}></Route>
-        <Route path="/ledger" element={<Ledger></Ledger>}></Route>
+        <Route path="/transaction" element={<Ledger></Ledger>}></Route>
         <Route path="/newsale" element={<NewSale></NewSale>}></Route>
         <Route path="/newpurchase" element={<NewPurchase></NewPurchase>}></Route>
       </Routes>

@@ -1,5 +1,6 @@
 import fs from "fs";
 import { join } from "path";
+import { reloadDatabase } from "../localdb/main";
 import { getRootDir } from "../root";
 import { verify } from "./auth";
 import { loadTokens } from "./main";
@@ -137,4 +138,88 @@ async function updateFile(fileId, fileContent, accessToken) {
     success: true,
     message: "Synced sucessfully"
   };
+}
+
+export async function readFromDrive(fileName = "appdb.json") {
+  const isAuthenticated = await verify();
+
+  if (!isAuthenticated.success) {
+    console.log("Authentication failed - read cancelled");
+    return {
+      success: false,
+      message: "Authentication failed"
+    };
+  }
+
+  const savedTokens = loadTokens();
+
+  try {
+    // Step 1: check if file exists
+    const existingFile = await findFileByName(fileName, savedTokens.access_token);
+
+    if (!existingFile) {
+      return {
+        success: false,
+        message: "File not found on Google Drive"
+      };
+    }
+
+    // Step 2: Download file content
+    const fileContent = await downloadFile(existingFile.id, savedTokens.access_token);
+
+    // 🔥 IMPORTANT: reload in-memory DB
+    await reloadDatabase();
+
+    return {
+      success: true,
+      data: fileContent
+    };
+  } catch (err) {
+    console.error("Error reading from Drive:", err);
+    return {
+      success: false,
+      error: err
+    };
+  }
+}
+
+async function downloadFile(fileId, accessToken) {
+  const response = await fetch(`${GOOGLE_API_BASE}/drive/v3/files/${fileId}?alt=media`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `Failed to download file: ${response.status} ${response.statusText} - ${errorText}`
+    );
+  }
+
+  const text = await response.text();
+
+  // Parse JSON
+  let jsonData;
+  try {
+    jsonData = JSON.parse(text);
+  } catch (err) {
+    throw new Error("Downloaded file is not valid JSON");
+  }
+
+  // ⚡ Path where DB should be saved
+
+  const filePath = join(getRootDir(), "appdb.json");
+
+  // Ensure directory exists
+  if (!fs.existsSync(getRootDir())) {
+    fs.mkdirSync(getRootDir(), { recursive: true });
+  }
+
+  // Write file
+  fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+
+  console.log("DB downloaded and saved to:", filePath);
+
+  return jsonData;
 }

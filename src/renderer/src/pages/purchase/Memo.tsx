@@ -1,54 +1,12 @@
-import { bdt } from "@/lib/utils"
-import html2canvas from "html2canvas"
-import jsPDF from "jspdf"
-import { Printer } from "lucide-react"
-import { useRef } from "react"
+import { bdt } from "@/lib/utils";
 
-const Memo = ({ saleData }) => {
+const Memo = ({ purchaseData, pdfRef }) => {
   const { products, supplier, serial, poNum, chalanNum, billingDate, paid, paymentOption } =
-    saleData
+    purchaseData;
 
-  const billAmount = products?.reduce((acc, curr) => acc + curr.quantity * curr.rate, 0)
-  const prevDue = supplier?.totalSale - supplier?.totalPaid || 0
+  const billAmount = products?.reduce((acc, curr) => acc + curr.quantity * curr.rate, 0) || 0;
+  const prevDue = supplier?.totalSale - supplier?.totalPaid || 0;
 
-  const pdfRef = useRef<HTMLDivElement | null>(null)
-
-  const printInvoice = async () => {
-    const element = pdfRef.current
-    if (!element) return
-    const canvas = await html2canvas(element, {
-      scale: 3, // Higher quality
-      useCORS: true,
-      logging: false
-    })
-
-    const imgData = canvas.toDataURL("image/png")
-
-    // const link = document.createElement("a")
-    // link.download = `image.png`
-    // link.href = imgData
-    // link.click()
-
-    const pdf = new jsPDF("p", "mm", "a4")
-    const imgWidth = 210 // A4 width in mm
-    const pageHeight = 295 // A4 height in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-    let heightLeft = imgHeight
-    let position = 0
-
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
-    heightLeft -= pageHeight
-
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight
-      pdf.addPage()
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
-    }
-
-    pdf.save(`Invoice-${serial ? serial + "-" + supplier?.name : "random"}.pdf`)
-  }
   return (
     <div>
       <div className={`p-12`} ref={pdfRef}>
@@ -59,7 +17,9 @@ const Memo = ({ saleData }) => {
             <div className={`flex`}>
               <p className={`w-[50%]`}>Bill number </p>
               <p className={`before:mr-1 before:content-[':']`}>
-                {supplier ? `${serial}-${supplier.name.toLowerCase()}-${supplier.identifier.toLowerCase()}` : serial}
+                {supplier
+                  ? `${serial}-${supplier.name.toLowerCase()}-${supplier.identifier.toLowerCase()}`
+                  : serial}
               </p>
             </div>
             <div className={`flex`}>
@@ -162,17 +122,8 @@ const Memo = ({ saleData }) => {
           </table>
         </div>
       </div>
-
-      <div className={`absolute right-14 bottom-6 flex items-center gap-x-2`}>
-        <button
-          className={`h-8 cursor-pointer rounded border border-blue-400 px-4 text-blue-600`}
-          onClick={() => printInvoice()}
-        >
-          <Printer className={`h-4 w-4`}></Printer>
-        </button>
-      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Memo
+export default Memo;

@@ -1,6 +1,6 @@
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { Menu } from "@/components/menu"
+import { Menu } from "@/components/menu";
 import {
   Table,
   TableBody,
@@ -8,41 +8,39 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
-import { useMenu } from "@/hooks/useMenu"
-import { action } from "@/lib/constants"
-import { useModalStore } from "@/store"
-import { TProduct } from "@shared/models"
-import { useState } from "react"
+} from "@/components/ui/table";
+import { useMenu } from "@/hooks/useMenu";
+import { action } from "@/lib/constants";
+import { useModalStore } from "@/store";
+import { TProduct } from "@shared/models";
+import { useState } from "react";
 
 interface DataTableProps<Product extends TProduct, TValue> {
-  columns: ColumnDef<Product, TValue>[]
-  data: Product[]
+  columns: ColumnDef<Product, TValue>[];
+  data: Product[];
 }
 
 export function DataTable<Product extends TProduct, TValue>({
   columns,
   data
 }: DataTableProps<Product, TValue>) {
-  const { openModal } = useModalStore()
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel()
-  })
+  });
 
-  const menuHook = useMenu()
-  const [selectedId, setSelectedId] = useState<string>("")
+  const menuHook = useMenu();
+  const [selectedId, setSelectedId] = useState<string>("");
 
   function handleRowRightClick(event: React.MouseEvent, product: TProduct) {
-    setSelectedId(product.id)
-    menuHook.openMenu(product.id, event, { x: event.clientX, y: event.clientY })
+    setSelectedId(product.id);
+    menuHook.openMenu(product.id, event, { x: event.clientX, y: event.clientY });
   }
 
   function handleRestock() {
-    openModal(action.product.stock, { productId: selectedId })
-    menuHook.closeMenu()
+    useModalStore.getState().openModal(action.product.stock, { productId: selectedId });
+    menuHook.closeMenu();
   }
 
   return (
@@ -65,7 +63,7 @@ export function DataTable<Product extends TProduct, TValue>({
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -85,7 +83,7 @@ export function DataTable<Product extends TProduct, TValue>({
                     </TableCell>
                   ))}
                 </TableRow>
-              )
+              );
             })
           ) : (
             <TableRow>
@@ -97,5 +95,5 @@ export function DataTable<Product extends TProduct, TValue>({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

@@ -36,7 +36,7 @@ const AddProduct = () => {
       costLast: 0,
       stock: 0,
       cost: 0,
-      size: data.size || "N/A",
+      size: data.size || "",
       unit: data.unit,
       rate: 0,
       quantity: 0,

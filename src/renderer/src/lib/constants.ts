@@ -37,7 +37,8 @@ type Action = {
   };
   common: {
     searchuser: string;
-    minimemo: string;
+    shortinv: string;
+    shortmemo: string;
   };
 };
 
@@ -80,8 +81,10 @@ export const action: Action = {
   },
   common: {
     searchuser: "search-user",
-    minimemo: "mini-memo"
+    shortinv: "short-invoice",
+    shortmemo: "short-memo"
   }
 };
 
-export const paymentOptions = ["cash", "cheque", "card", "online"];
+
+export const paymentOptions = ["Cash", "Cheque", "Card", "Mfs"];

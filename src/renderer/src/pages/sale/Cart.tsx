@@ -69,8 +69,8 @@ const Cart = ({ args }) => {
                   {item.name}
                 </p>
                 <p>{item.brand}</p>
-                <p>{item.unit}</p>
                 <p>{item.size}</p>
+                <p>{item.unit}</p>
                 {cart.find((prod) => prod.productId === item.id) ? (
                   <>
                     <input
