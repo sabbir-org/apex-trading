@@ -9,7 +9,6 @@ const SCOPES = [
   "https://www.googleapis.com/auth/drive"
 ];
 
-// const TOKEN_PATH = join(app.getPath("userData"), "tokens.json");
 const TOKEN_PATH = join(getAppDir(), "tokens.json");
 
 const devRootDir = app.getAppPath();

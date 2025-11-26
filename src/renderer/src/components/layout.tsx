@@ -4,13 +4,13 @@ import { useMenu } from "@/hooks/useMenu";
 
 import { useCloudStore, useExtraStore } from "@/store";
 import {
+  BanknoteArrowDown,
   Grid2x2,
   Package,
   PlusCircle,
   RefreshCw,
-  ScrollText,
-  ShieldUser,
-  User
+  User,
+  UserRoundPen
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -137,11 +137,11 @@ const Sidebar = () => {
             <User size={16} />
           </CustomLink>
           <CustomLink to={"/supplier"}>
-            <ShieldUser size={16} />
+            <UserRoundPen size={16} />
           </CustomLink>
 
           <CustomLink to={"/transaction"}>
-            <ScrollText size={16} />
+            <BanknoteArrowDown size={16} />
           </CustomLink>
         </div>
 
