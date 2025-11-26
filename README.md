@@ -1,3 +1,5 @@
+https://github.com/iffy/electron-updater-example?tab=readme-ov-file
+
 ```ts
 // main/index.ts
 export let mainWindow: BrowserWindow;
