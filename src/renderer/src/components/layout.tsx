@@ -93,20 +93,14 @@ const Layout = ({ children }) => {
 };
 
 const Sidebar = () => {
-  const { isSyncOn, loading, verifyToken, loggedIn, turnOnSync } = useCloudStore();
   const menuHook = useMenu();
+  const { user, loading, verifyToken, syncFile } = useCloudStore();
   const navigate = useNavigate();
   const [newId, setNewId] = useState("");
 
-  useEffect(() => {
-    if (isSyncOn) {
-      verifyToken();
-    }
-  }, []);
-
-  const handleLogin = () => {
-    useCloudStore.getState().login();
-  };
+  // useEffect(() => {
+  //   // !user && verifyToken();
+  // }, []);
 
   function handleMenuClick(e: React.MouseEvent) {
     const id = v4();
@@ -172,20 +166,18 @@ const Sidebar = () => {
           )}
         </div>
       </div>
-      <div className={`px-2`}>
-        {loggedIn ? (
-          <button
-            className={`mb-2 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-blue-400 text-blue-600 outline-none`}
-            onClick={turnOnSync}
-          >
-            {loading ? <RefreshCw className={`h-4 w-4 animate-spin`}></RefreshCw> : "Backup"}
-          </button>
+      <div className={`p-2`}>
+        {user ? (
+          <div className={`ml-8 h-8 space-x-4`}>
+            <img className={`h-6 w-6 rounded-full`} src={user?.picture} alt="dp" />
+            <span className={``}>{user?.name}</span>
+          </div>
         ) : (
           <button
-            className={`mb-2 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-blue-400 text-blue-600 outline-none`}
-            onClick={handleLogin}
+            className={`flex h-8 w-full cursor-pointer items-center justify-center rounded bg-blue-600 text-white`}
+            onClick={syncFile}
           >
-            {loading ? <RefreshCw className={`h-4 w-4 animate-spin`}></RefreshCw> : "Login"}
+            {loading ? <RefreshCw className={`h-4 w-4 animate-spin`} /> : "Cloud sync"}
           </button>
         )}
       </div>

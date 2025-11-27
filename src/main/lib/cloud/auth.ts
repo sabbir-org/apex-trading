@@ -7,7 +7,7 @@ import { getAuthURL, loadTokens, oauth2Client, refreshAccessToken, saveTokens } 
 
 export let authWindow: BrowserWindow | null = null;
 
-export async function login() {
+export async function login(): Promise<TAuthResponse> {
   return new Promise((resolve, reject) => {
     const authURL = getAuthURL();
     const app = express();
@@ -69,10 +69,12 @@ type TAuthResponse = {
 };
 
 export async function verify(): Promise<TAuthResponse> {
-  const savedTokens = loadTokens();
+  let savedTokens = loadTokens();
   if (!savedTokens) {
-    await login();
-    return { success: false, message: "Please login" };
+    const res = await login();
+    if (res.success) {
+      savedTokens = loadTokens();
+    }
   }
 
   try {

@@ -197,6 +197,7 @@ app.whenReady().then(() => {
   ipcMain.handle("updateExpense", async (_, expense) => await updateExpense(expense));
 
   /** --------------------- Cloud ------------------------------------- */
+  ipcMain.handle("readFromDrive", async () => await readFromDrive());
   ipcMain.handle("uploadToDrive", async () => await uploadToDrive());
   ipcMain.handle("login", async () => await login());
   ipcMain.handle("verify", async () => await verify());

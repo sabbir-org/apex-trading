@@ -39,6 +39,7 @@ try {
     updateDashboard: (key: string, value: any) => ipcRenderer.invoke("updateDashboard", key, value),
     updateExpense: (expense: TExpense) => ipcRenderer.invoke("updateExpense", expense),
 
+    readFromDrive: () => ipcRenderer.invoke("readFromDrive"),
     uploadToDrive: () => ipcRenderer.invoke("uploadToDrive"),
     login: () => ipcRenderer.invoke("login"),
     verify: () => ipcRenderer.invoke("verify"),

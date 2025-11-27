@@ -4,51 +4,32 @@ import { useToastStore } from "../ui/toastStore";
 type State = {
   loading: boolean;
   error: string | null;
-  login: () => void;
-  loggedIn: boolean;
-  isSyncOn: boolean;
-  turnOnSync: () => void;
+  user: any;
+  syncFile: () => void;
   verifyToken: () => void;
 };
 
 export const useCloudStore = create<State>((set) => ({
   loading: false,
-  loggedIn: false,
+  user: null,
   error: null,
-  isSyncOn: localStorage.getItem("isSyncOn") === "true",
 
-  login: async () => {
+  syncFile: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await window.context.login();
+      const res = await window.context.readFromDrive();
       console.log(res);
       if (res.success) {
-        set({ isSyncOn: true, loggedIn: true, loading: false });
-
+        set({ loading: false });
         useToastStore.getState().toast("sync", res.message, "success");
-        localStorage.setItem("isSyncOn", "true");
       } else {
-        set({ error: res.message, loading: false });
-        useToastStore.getState().toast("sync", res.message, "error");
-      }
-    } catch (err: any) {
-      set({ loading: true, error: null });
-      set({ error: err.message || "Failed to login", loading: false });
-    }
-  },
-
-  turnOnSync: async () => {
-    set({ loading: true, error: null });
-    try {
-      const res = await window.context.uploadToDrive();
-      console.log(res);
-      if (res.success) {
-        set({ isSyncOn: true, loading: false });
-        useToastStore.getState().toast("sync", res.message, "success");
-        localStorage.setItem("isSyncOn", "true");
-      } else {
-        set({ error: res.message, loading: false });
-        useToastStore.getState().toast("sync", res.message, "error");
+        const res = await window.context.uploadToDrive();
+        if (res.success) {
+          set({ loading: false });
+          useToastStore.getState().toast("sync", res.message, "success");
+        } else {
+          useToastStore.getState().toast("sync", res.message, "error");
+        }
       }
     } catch (err: any) {
       set({ loading: true, error: null });
@@ -61,7 +42,7 @@ export const useCloudStore = create<State>((set) => ({
     try {
       const res = await window.context.verify();
       if (res.success) {
-        set({ loading: false, loggedIn: true });
+        set({ loading: false, user: res.data });
         console.log(res.data);
       } else {
         set({ loading: false, error: res.message });

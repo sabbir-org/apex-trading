@@ -141,9 +141,9 @@ async function updateFile(fileId, fileContent, accessToken) {
 }
 
 export async function readFromDrive(fileName = "appdb.json") {
-  const isAuthenticated = await verify();
+  const verificationRes = await verify();
 
-  if (!isAuthenticated.success) {
+  if (!verificationRes.success) {
     console.log("Authentication failed - read cancelled");
     return {
       success: false,
@@ -172,7 +172,8 @@ export async function readFromDrive(fileName = "appdb.json") {
 
     return {
       success: true,
-      data: fileContent
+      data: fileContent,
+      message: "Synced sucessfully"
     };
   } catch (err) {
     console.error("Error reading from Drive:", err);
