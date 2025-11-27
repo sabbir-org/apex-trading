@@ -2,21 +2,20 @@ import fs from "fs";
 import { join } from "path";
 import { getDataBase, reloadDatabase } from "../localdb/main";
 import { getAppDir } from "../root";
-import { verify } from "./auth";
 import { loadTokens } from "./main";
 
 const GOOGLE_API_BASE = "https://www.googleapis.com";
 
 export async function uploadToDrive() {
-  const isAuthenticated = await verify();
+  // const verificationRes = await verify();
 
-  if (!isAuthenticated.success) {
-    console.log("Authentication failed - upload cancelled");
-    return {
-      success: false,
-      message: "Authentication failed"
-    };
-  }
+  // if (!verificationRes.success) {
+  //   console.log("Authentication failed - upload cancelled");
+  //   return {
+  //     success: false,
+  //     message: "Authentication failed"
+  //   };
+  // }
 
   const fileName = `appdb.json`;
   const filePath = join(getAppDir(), fileName);
@@ -141,15 +140,19 @@ async function updateFile(fileId, fileContent, accessToken) {
 }
 
 export async function readFromDrive(fileName = "appdb.json") {
-  const verificationRes = await verify();
+  // const verificationRes = await verify();
 
-  if (!verificationRes.success) {
-    console.log("Authentication failed - read cancelled");
-    return {
-      success: false,
-      message: "Authentication failed"
-    };
-  }
+  // if (verificationRes.success) {
+  //   mainWindow.webContents.send("drive:userdata", verificationRes.data);
+  // }
+
+  // if (!verificationRes.success) {
+  //   console.log("Authentication failed - read cancelled");
+  //   return {
+  //     success: false,
+  //     message: "Authentication failed"
+  //   };
+  // }
 
   const savedTokens = loadTokens();
 
@@ -172,8 +175,8 @@ export async function readFromDrive(fileName = "appdb.json") {
 
     return {
       success: true,
-      data: fileContent,
-      message: "Synced sucessfully"
+      content: fileContent,
+      message: "Synced"
     };
   } catch (err) {
     console.error("Error reading from Drive:", err);

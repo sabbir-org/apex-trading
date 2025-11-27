@@ -81,9 +81,9 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
 
-  mainWindow.once("ready-to-show", () => {
-    readFromDrive();
-  });
+  // mainWindow.once("ready-to-show", () => {
+  //   readFromDrive();
+  // });
 
   is.dev && mainWindow.webContents.openDevTools({ mode: "right" });
 }

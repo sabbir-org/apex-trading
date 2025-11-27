@@ -17,20 +17,28 @@ export const useCloudStore = create<State>((set) => ({
   syncFile: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await window.context.readFromDrive();
-      console.log(res);
-      if (res.success) {
+      const veriRes = await window.context.verify();
+
+      if (!veriRes.success) {
         set({ loading: false });
-        useToastStore.getState().toast("sync", res.message, "success");
+        useToastStore.getState().toast("sync", veriRes.message, "error");
+        return;
+      }
+
+      set({ user: veriRes.data });
+      const readRes = await window.context.readFromDrive();
+
+      if (readRes.success) {
+        useToastStore.getState().toast("sync", readRes.message, "success");
       } else {
-        const res = await window.context.uploadToDrive();
-        if (res.success) {
-          set({ loading: false });
-          useToastStore.getState().toast("sync", res.message, "success");
+        const upRes = await window.context.uploadToDrive();
+        if (upRes.success) {
+          useToastStore.getState().toast("sync", upRes.message, "success");
         } else {
-          useToastStore.getState().toast("sync", res.message, "error");
+          useToastStore.getState().toast("sync", upRes.message, "error");
         }
       }
+      set({ loading: false });
     } catch (err: any) {
       set({ loading: true, error: null });
       set({ error: err.message || "Failed to sync", loading: false });

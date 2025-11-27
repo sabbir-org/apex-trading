@@ -94,13 +94,13 @@ const Layout = ({ children }) => {
 
 const Sidebar = () => {
   const menuHook = useMenu();
-  const { user, loading, verifyToken, syncFile } = useCloudStore();
+  const { user, loading, syncFile } = useCloudStore();
   const navigate = useNavigate();
   const [newId, setNewId] = useState("");
 
-  // useEffect(() => {
-  //   // !user && verifyToken();
-  // }, []);
+  useEffect(() => {
+    if (!user) syncFile();
+  }, []);
 
   function handleMenuClick(e: React.MouseEvent) {
     const id = v4();
@@ -168,16 +168,16 @@ const Sidebar = () => {
       </div>
       <div className={`p-2`}>
         {user ? (
-          <div className={`ml-8 h-8 space-x-4`}>
-            <img className={`h-6 w-6 rounded-full`} src={user?.picture} alt="dp" />
-            <span className={``}>{user?.name}</span>
+          <div className={`ml-8 flex h-8 items-center space-x-4`}>
+            <img className={`h-6 w-6 rounded-full`} src={user.picture} alt="dp" />
+            <span className={``}>{user.name}</span>
           </div>
         ) : (
           <button
-            className={`flex h-8 w-full cursor-pointer items-center justify-center rounded bg-blue-600 text-white`}
+            className={`h-8 w-full cursor-pointer flex items-center rounded bg-blue-600 text-white justify-center`}
             onClick={syncFile}
           >
-            {loading ? <RefreshCw className={`h-4 w-4 animate-spin`} /> : "Cloud sync"}
+            {loading ? <RefreshCw className={` h-4 w-4 animate-spin`} /> : "Cloud sync"}
           </button>
         )}
       </div>

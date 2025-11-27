@@ -53,7 +53,12 @@ declare global {
       updateExpense: (expense: TExpense) => Promise<{ success: boolean }>;
 
       /** --------------------- Cloud ------------------------------------- */
-      readFromDrive: () => Promise<{ success: boolean; data?: any; message: string }>;
+      readFromDrive: () => Promise<{
+        success: boolean;
+        userData?: any;
+        content?: any;
+        message: string;
+      }>;
       uploadToDrive: () => Promise<{ success: boolean; message: string }>;
       login: () => Promise<{ success: boolean; message: string }>;
       verify: () => Promise<{ success: boolean; message: string; data?: any }>;

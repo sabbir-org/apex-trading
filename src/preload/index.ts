@@ -43,6 +43,10 @@ try {
     uploadToDrive: () => ipcRenderer.invoke("uploadToDrive"),
     login: () => ipcRenderer.invoke("login"),
     verify: () => ipcRenderer.invoke("verify"),
+    // onUserData: (callback) =>
+    //   ipcRenderer.on("drive:userdata", (_, data) => {
+    //     callback(data);
+    //   }),
 
     getLedger: () => ipcRenderer.invoke("getLedger"),
     updateLedger: (invoice: any) => ipcRenderer.invoke("updateLedger", invoice),
